@@ -1,5 +1,6 @@
 package me.lojosho.dvzremapped.classes.monsters;
 
+import me.lojosho.dvzremapped.game.Game;
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.user.UserStatus;
 import me.lojosho.dvzremapped.user.Users;
@@ -20,7 +21,7 @@ import java.util.List;
 public class SpiderMonster extends Monster {
 
     public SpiderMonster() {
-        super("spider", Material.MUSIC_DISC_MALL, NamedTextColor.LIGHT_PURPLE, ChatColor.LIGHT_PURPLE, .15f, EntityType.SPIDER,
+        super(Game.SPIDER, Material.MUSIC_DISC_MALL, NamedTextColor.LIGHT_PURPLE, ChatColor.LIGHT_PURPLE, .15f, EntityType.SPIDER,
                 List.of("Blind and confuse the", "dwarves with your skill!"), 20000);
     }
 

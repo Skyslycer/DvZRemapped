@@ -1,5 +1,6 @@
 package me.lojosho.dvzremapped.classes.monsters;
 
+import me.lojosho.dvzremapped.game.Game;
 import me.lojosho.dvzremapped.user.User;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -18,7 +19,7 @@ import java.util.List;
 public class BroodmotherMonster extends Monster {
 
     public BroodmotherMonster() {
-        super("Broodmother", Material.MUSIC_DISC_WARD, NamedTextColor.DARK_GREEN, ChatColor.DARK_GREEN, .05f, EntityType.SILVERFISH,
+        super(Game.BROODMOTHER, Material.MUSIC_DISC_WARD, NamedTextColor.DARK_GREEN, ChatColor.DARK_GREEN, .05f, EntityType.SILVERFISH,
                 List.of("Spawn silverfish and", "attack the fortress!"), 20000);
     }
 

@@ -1,5 +1,6 @@
 package me.lojosho.dvzremapped.classes.dwarves;
 
+import me.lojosho.dvzremapped.game.Game;
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.util.MessagesUtil;
 import me.lojosho.dvzremapped.util.PlayerUtil;
@@ -26,7 +27,7 @@ public class TailorDwarf extends Dwarf {
     List<ItemStack> items = List.of(new ItemStack(Material.DIAMOND_HELMET), new ItemStack(Material.DIAMOND_CHESTPLATE), new ItemStack(Material.DIAMOND_LEGGINGS), new ItemStack(Material.DIAMOND_BOOTS), new ItemStack(Material.SHIELD));
 
     public TailorDwarf() {
-        super("tailor", Material.MUSIC_DISC_OTHERSIDE, NamedTextColor.BLUE, ChatColor.BLUE, .5f,
+        super(Game.TAILOR, Material.MUSIC_DISC_OTHERSIDE, NamedTextColor.BLUE, ChatColor.BLUE, .5f,
                 List.of("Transmutate mundane potions to", "get potions to save and power up dwarves!"), 2000);
     }
 

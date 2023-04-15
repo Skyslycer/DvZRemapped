@@ -29,7 +29,7 @@ public abstract class Dwarf extends PlayerClass {
     public boolean checkSkillReady(@NotNull User user) {
         var time = getSkillTime(user, getCooldown());
         if (time > 0) {
-            MessagesUtil.sendMessage(user.getPlayer(), "<#CE4B9C>Your transmutation is on cooldown! " + time + "s");
+            MessagesUtil.sendMessage(user.getPlayer(), "<#CE4B9C>Your transmutation is on cooldown! " + Math.ceil(time / 1000f) + "s");
             return false;
         }
         return true;

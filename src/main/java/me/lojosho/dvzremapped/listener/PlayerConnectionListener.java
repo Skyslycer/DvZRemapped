@@ -22,32 +22,27 @@ public class PlayerConnectionListener implements Listener {
     public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
         event.joinMessage(MiniMessage.miniMessage().deserialize("<GRAY>(<GREEN>+<GRAY>) " + event.getPlayer().getName()));
         Player player = event.getPlayer();
-        if (!Game.isGameStart()) {
-            Game.hideBossBar(player);
-        }
+        Game.hideBossBar(player);
         // Player should now be able to carry over connections
         if (!Users.contains(event.getPlayer().getUniqueId())) {
-            System.out.println("a");
             User user = new User(event.getPlayer());
             Users.add(user);
             user.reset();
         } else {
             var user = Users.get(event.getPlayer().getUniqueId());
-            System.out.println(user.getStatus());
-            if (user.getStatus() == UserStatus.LIMBO) {
+            user.setPlayer(player);
+            if (user.getStatus() == UserStatus.LIMBO || !Game.isGameStart()) {
                 user.reset();
             } else if (user.getLogoutLocation() != null) {
-                System.out.println("hmm");
                 user.getPlayer().teleport(user.getLogoutLocation());
                 return;
             }
         }
 
-        if (Game.getStatus() == GameStatus.RUNNING) {
+        if (Game.isGameStart()) {
             if (Game.isMonsterReleased()) {
                 PlayerUtil.giveAll(player, PlayerClass.getRandomClassesItems(Monsters.getRandomMonsterClasses()));
             } else {
-                System.out.println("what");
                 PlayerUtil.giveAll(player, PlayerClass.getRandomClassesItems(Dwarves.getRandomDwarfClasses()));
             }
         }

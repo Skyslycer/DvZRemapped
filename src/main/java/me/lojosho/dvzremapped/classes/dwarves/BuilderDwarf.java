@@ -1,5 +1,6 @@
 package me.lojosho.dvzremapped.classes.dwarves;
 
+import me.lojosho.dvzremapped.game.Game;
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.util.MessagesUtil;
 import me.lojosho.dvzremapped.util.PlayerUtil;
@@ -26,7 +27,7 @@ public class BuilderDwarf extends Dwarf {
     List<Material> blocks = List.of(Material.CRACKED_STONE_BRICKS, Material.MOSSY_STONE_BRICKS, Material.CHISELED_STONE_BRICKS, Material.STONE_BRICKS);
 
     public BuilderDwarf() {
-        super("builder", Material.MUSIC_DISC_CAT, NamedTextColor.GREEN, ChatColor.GREEN, 1,
+        super(Game.BUILDER, Material.MUSIC_DISC_CAT, NamedTextColor.GREEN, ChatColor.GREEN, 1,
                 List.of("Transmutate air to get", "blocks to build the fortress!"), 10000);
     }
 

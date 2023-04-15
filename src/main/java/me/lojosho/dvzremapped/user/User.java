@@ -15,8 +15,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.UUID;
 
 public class User {
-    private final Player player;
     private final UUID uuid;
+    private Player player;
     private UserStatus status;
     private Location logoutLocation;
 
@@ -71,6 +71,7 @@ public class User {
     }
 
     public void reset() {
+        System.out.println("sd");
         logoutLocation = null;
         userClass = null;
         setStatus(UserStatus.LIMBO);
@@ -116,6 +117,11 @@ public class User {
 
     public @NotNull Player getPlayer() {
         return player;
+    }
+
+    // Use with caution
+    public void setPlayer(Player player) {
+        this.player = player;
     }
 
     // Not safe for outside classes to call this method

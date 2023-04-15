@@ -1,5 +1,6 @@
 package me.lojosho.dvzremapped.user;
 
+import me.lojosho.dvzremapped.classes.PlayerClass;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -58,5 +59,10 @@ public class Users {
 
     public static int getCounted(UserStatus status) {
         return values().stream().filter(user -> user.getPlayer().isOnline()).filter(user -> user.getStatus() == status).toList().size();
+    }
+
+    public static int getCounted(UserStatus status, String id) {
+        return values().stream().filter(user -> user.getPlayer().isOnline()).filter(user -> user.getStatus() == status)
+                .filter(user -> user.getUserClass().getId().equals(id)).toList().size();
     }
 }

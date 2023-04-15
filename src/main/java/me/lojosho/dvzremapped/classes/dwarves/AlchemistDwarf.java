@@ -1,5 +1,6 @@
 package me.lojosho.dvzremapped.classes.dwarves;
 
+import me.lojosho.dvzremapped.game.Game;
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.util.MessagesUtil;
 import me.lojosho.dvzremapped.util.PlayerUtil;
@@ -33,7 +34,7 @@ public class AlchemistDwarf extends Dwarf {
     private static ItemStack potionOfFireResistance;
 
     public AlchemistDwarf() {
-        super("alchemist", Material.MUSIC_DISC_MELLOHI, NamedTextColor.DARK_PURPLE, ChatColor.DARK_PURPLE,
+        super(Game.ALCHEMIST, Material.MUSIC_DISC_MELLOHI, NamedTextColor.DARK_PURPLE, ChatColor.DARK_PURPLE,
                 .5f, List.of("Transmutate mundane potions to get", "potions to save and powerup dwarves!"), 2000);
 
         // Set up potions

@@ -1,5 +1,6 @@
 package me.lojosho.dvzremapped.classes.dwarves;
 
+import me.lojosho.dvzremapped.game.Game;
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.util.MessagesUtil;
 import me.lojosho.dvzremapped.util.PlayerUtil;
@@ -26,7 +27,7 @@ public class BlacksmithDwarf extends Dwarf {
     List<ItemStack> items = List.of(new ItemStack(Material.DIAMOND_PICKAXE), new ItemStack(Material.FEATHER, 32), new ItemStack(Material.FLINT, 32), new ItemStack(Material.STRING, 3), new ItemStack(Material.SHIELD), new ItemStack(Material.BLAZE_ROD, 4));
 
     public BlacksmithDwarf() {
-        super("blacksmith", Material.MUSIC_DISC_STAL, NamedTextColor.GRAY, ChatColor.GRAY, .3f,
+        super(Game.BLACKSMITH, Material.MUSIC_DISC_STAL, NamedTextColor.GRAY, ChatColor.GRAY, .3f,
                 List.of("Transmutate clocks to get", "powerful swords to slay monsters!"), 2000);
     }
 

@@ -6,6 +6,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import me.lojosho.dvzremapped.DvZRemappedPlugin;
 import me.lojosho.dvzremapped.classes.PlayerClass;
 import me.lojosho.dvzremapped.classes.dwarves.Dwarves;
+import me.lojosho.dvzremapped.classes.monsters.Monsters;
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.user.UserStatus;
 import me.lojosho.dvzremapped.user.Users;
@@ -30,8 +31,20 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.time.Duration;
+import java.util.stream.Collectors;
 
 public class Game {
+
+    public static final String ALCHEMIST = "alchemist";
+    public static final String BLACKSMITH = "blacksmith";
+    public static final String BUILDER = "builder";
+    public static final String TAILOR = "tailor";
+    public static final String BROODMOTHER = "broodmother";
+    public static final String CREEPER = "creeper";
+    public static final String SKELETON = "skeleton";
+    public static final String ZOMBIE = "zombie";
+    public static final String SPIDER = "spider";
+
     public final static int SHRINE_MAX_HEALTH = 750;
     //private final static int MONSTER_RELEASE_TIME = 30;
     private static int monsterReleaseTime = 2100;
@@ -41,6 +54,7 @@ public class Game {
     private static BossBar bossBar;
     private static GameStatus status;
     private static BukkitTask task;
+    private static BukkitTask actionbarTask;
 
     public static void startGame() {
         if (status == GameStatus.RUNNING) return;
@@ -49,16 +63,22 @@ public class Game {
         status = GameStatus.RUNNING;
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            User user = Users.get(player.getUniqueId());
-            if (user.getStatus() == UserStatus.LIMBO) {
-                player.getInventory().clear();
-                PlayerUtil.giveAll(player, PlayerClass.getRandomClassesItems(Dwarves.getRandomDwarfClasses()));
+            User user;
+            if (Users.contains(player.getUniqueId())) {
+                user = Users.get(player.getUniqueId());
+            } else {
+                user = new User(player);
+                Users.add(user);
             }
+            user.reset();
+            PlayerUtil.giveAll(player, PlayerClass.getRandomClassesItems(Dwarves.getRandomDwarfClasses()));
         }
 
         World world = DvZRemappedPlugin.getDwarfSpawn().getWorld();
         if (world != null) {
             world.setTime(0);
+            world.setStorm(false);
+            world.setThundering(false);
             world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
             world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
             world.setGameRule(GameRule.DO_INSOMNIA, false);
@@ -72,8 +92,6 @@ public class Game {
                     Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(10), Duration.ofSeconds(2))));
             player.playSound(Sound.sound(Key.key("entity.wither.spawn"), Sound.Source.MASTER, 1, 1));
         });
-
-        DvZRemappedPlugin.getDwarfSpawn().getWorld().setStorm(false);
 
         bossBar = BossBar.bossBar(Component.text("Shrine Health"), 1, BossBar.Color.PURPLE, BossBar.Overlay.PROGRESS);
 
@@ -94,12 +112,37 @@ public class Game {
             // Checks if the game should end
             checkEndGame();
         }, 0, 20);
+
+        actionbarTask = Bukkit.getScheduler().runTaskTimerAsynchronously(DvZRemappedPlugin.getInstance(), () -> {
+            Users.values().stream().filter(user -> user.getPlayer().isOnline()).forEach(user -> {
+                if (user.getStatus() == UserStatus.LIMBO) {
+                    if (Game.isMonsterReleased()) {
+                        user.getPlayer().sendActionBar(MessagesUtil.processStringNoKey(user.getPlayer(),
+                                        "<dark_green>Broodmother: <reset>" + Users.getCounted(UserStatus.MONSTER, BROODMOTHER) +
+                                                " <light_purple>Spider: <reset>" + Users.getCounted(UserStatus.MONSTER, SPIDER) +
+                                                " <aqua>Zombie: <reset>" + Users.getCounted(UserStatus.MONSTER, ZOMBIE) +
+                                                " <white>Skeleton: <reset>" + Users.getCounted(UserStatus.MONSTER, SKELETON) +
+                                                " <red>Creeper: <reset>" + Users.getCounted(UserStatus.MONSTER, CREEPER)));
+                    } else {
+                        user.getPlayer().sendActionBar(MessagesUtil.processStringNoKey(user.getPlayer(),
+                                "<dark_purple>Alchemist: <reset>" + Users.getCounted(UserStatus.DWARF, ALCHEMIST) +
+                                        " <gray>Blacksmith: <reset>" + Users.getCounted(UserStatus.DWARF, BLACKSMITH) +
+                                        " <green>Builder: <reset>" + Users.getCounted(UserStatus.DWARF, BUILDER) +
+                                        " <blue>Tailor: <reset>" + Users.getCounted(UserStatus.DWARF, TAILOR)));
+                    }
+                } else if (user.getStatus() == UserStatus.DWARF) {
+                    user.getPlayer().sendActionBar(Component.empty());
+                }
+            });
+        }, 0, 2);
     }
 
     public static void endGame() {
+        System.out.println("end");
         if (status != GameStatus.RUNNING) return;
         status = GameStatus.WAITING;
         task.cancel();
+        actionbarTask.cancel();
 
         for (User user : Users.values()) {
             if (!user.getPlayer().isOnline()) {
@@ -109,8 +152,9 @@ public class Game {
             user.reset();
             user.getPlayer().playSound(Sound.sound(Key.key("entity.ender_dragon.death"), Sound.Source.MASTER, 1, 1));
             user.getPlayer().showTitle(Title.title(Component.text("DvZ has ended!").color(NamedTextColor.RED),
-                    Component.text("Time: " + TimeUtil.formatTime(timeCounted)).color(NamedTextColor.WHITE),
+                    Component.text(TimeUtil.formatTime(timeCounted)).color(NamedTextColor.WHITE),
                     Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(10), Duration.ofSeconds(2))));
+            user.getPlayer().sendActionBar(Component.empty());
             hideBossBar(user.getPlayer());
         }
         timeCounted = -1;
@@ -120,6 +164,7 @@ public class Game {
         if (status != GameStatus.RUNNING) return;
         // Do not end in the first 60 seconds
         if (timeCounted >= 60) {
+            //TODO  || Bukkit.getOnlinePlayers().size() == 0
             if (shrineHealth <= 0 || (isMonsterReleased() && Users.getCounted(UserStatus.DWARF) <= 0)) {
                 endGame();
             }
@@ -161,7 +206,7 @@ public class Game {
             if (user.getStatus() == UserStatus.LIMBO) {
                 Player player = user.getPlayer();
                 player.getInventory().clear();
-                player.getInventory().addItem(new ItemStack(Material.MAGMA_CREAM));
+                PlayerUtil.giveAll(player, PlayerClass.getRandomClassesItems(Monsters.getRandomMonsterClasses()));
             }
             if (user.getStatus() == UserStatus.DWARF && killedDwarves < numberToKillDwarves) {
                 user.getPlayer().setHealth(0);
@@ -178,7 +223,7 @@ public class Game {
     }
 
     public static boolean isGameStart() {
-        return timeCounted != -1;
+        return status == GameStatus.RUNNING;
     }
 
     public static boolean isMonsterReleased() {

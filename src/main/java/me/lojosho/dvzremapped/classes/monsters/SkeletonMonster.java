@@ -1,5 +1,6 @@
 package me.lojosho.dvzremapped.classes.monsters;
 
+import me.lojosho.dvzremapped.game.Game;
 import me.lojosho.dvzremapped.user.User;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
@@ -21,7 +22,7 @@ import java.util.List;
 public class SkeletonMonster extends Monster {
 
     public SkeletonMonster() {
-        super("skeleton", Material.MUSIC_DISC_STRAD, NamedTextColor.WHITE, ChatColor.WHITE, .25f, EntityType.SKELETON,
+        super(Game.SKELETON, Material.MUSIC_DISC_STRAD, NamedTextColor.WHITE, ChatColor.WHITE, .25f, EntityType.SKELETON,
                 List.of("Shoot the guards", "with flaming arrows!"), -1);
     }
 

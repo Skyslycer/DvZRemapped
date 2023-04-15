@@ -1,5 +1,6 @@
 package me.lojosho.dvzremapped.classes.monsters;
 
+import me.lojosho.dvzremapped.game.Game;
 import me.lojosho.dvzremapped.user.User;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
@@ -20,7 +21,7 @@ import java.util.List;
 public class ZombieMonster extends Monster {
 
     public ZombieMonster() {
-        super("zombie", Material.MUSIC_DISC_WAIT, NamedTextColor.AQUA, ChatColor.AQUA, 1, EntityType.ZOMBIE,
+        super(Game.ZOMBIE, Material.MUSIC_DISC_WAIT, NamedTextColor.AQUA, ChatColor.AQUA, 1, EntityType.ZOMBIE,
                 List.of("Attack the fortress", "with all your might!"), -1);
     }
 

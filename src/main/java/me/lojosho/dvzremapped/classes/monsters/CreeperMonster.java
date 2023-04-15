@@ -1,5 +1,6 @@
 package me.lojosho.dvzremapped.classes.monsters;
 
+import me.lojosho.dvzremapped.game.Game;
 import me.lojosho.dvzremapped.user.User;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.ChatColor;
@@ -16,7 +17,7 @@ import java.util.List;
 public class CreeperMonster extends Monster {
 
     public CreeperMonster() {
-        super("creeper", Material.MUSIC_DISC_CHIRP, NamedTextColor.RED, ChatColor.RED, .15f, EntityType.CREEPER,
+        super(Game.CREEPER, Material.MUSIC_DISC_CHIRP, NamedTextColor.RED, ChatColor.RED, .15f, EntityType.CREEPER,
                 List.of("Blow up the fortress", "with your explosive skill!"), -1);
     }
 
