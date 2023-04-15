@@ -1,0 +1,16 @@
+name: DvZRemapped
+version: '1.0'
+main: me.lojosho.dvzremapped.DvZRemappedPlugin
+api-version: 1.19
+authors: [ LoJoSho ]
+depend:
+  - WorldGuard
+  - LibsDisguises
+  - PlaceholderAPI
+commands:
+  dvz:
+    description: Default command
+    permission: "dvz.admin.start"
+permissions:
+  dvz.admin.start:
+    default: OP

@@ -1,0 +1,30 @@
+spawn-location:
+  dwarves:
+    world:
+    x: 0
+    y: 0
+    z: 0
+    yaw: 0
+    pitch: 90
+  monster:
+    world:
+    x: 0
+    y: 0
+    z: 0
+    yaw: 0
+    pitch: 90
+  join:
+    world:
+    x: 0
+    y: 0
+    z: 0
+    yaw: 0
+    pitch: 90
+
+MONSTER-RELEASE-TIME: 2100
+
+
+shrine:
+  x: 2
+  y: 2
+  z: 2
