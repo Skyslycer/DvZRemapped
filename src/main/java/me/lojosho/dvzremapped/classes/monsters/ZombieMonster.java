@@ -1,9 +1,9 @@
 package me.lojosho.dvzremapped.classes.monsters;
 
-import me.libraryaddict.disguise.disguisetypes.Disguise;
-import me.libraryaddict.disguise.disguisetypes.DisguiseType;
-import me.libraryaddict.disguise.disguisetypes.MobDisguise;
+import me.lojosho.dvzremapped.game.Game;
 import me.lojosho.dvzremapped.user.User;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -16,10 +16,13 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class ZombieMonster extends Monster {
 
     public ZombieMonster() {
-        super("zombie", Material.MUSIC_DISC_WAIT, 1, EntityType.ZOMBIE);
+        super(Game.ZOMBIE, Material.MUSIC_DISC_WAIT, NamedTextColor.AQUA, ChatColor.AQUA, 1, EntityType.ZOMBIE,
+                List.of("Attack the fortress", "with all your might!"), -1);
     }
 
     @Override
@@ -29,18 +32,8 @@ public class ZombieMonster extends Monster {
 
     @Override
     public void setup(@NotNull User user) {
-
         Player player = user.getPlayer();
-
-        Disguise disguise = new MobDisguise(DisguiseType.getType(getEntityType()));
-        disguise.setEntity(user.getPlayer());
-        disguise.setSelfDisguiseVisible(true);
-        disguise.setHidePlayer(true);
-        disguise.setMobsIgnoreDisguise(true);
-        disguise.startDisguise();
-        //DisguiseAPI.disguiseToAll(player, disguise);
-
-        player.getInventory().clear();
+        super.setup(user);
 
         ItemStack sword = new ItemStack(Material.IRON_SWORD, 1);
         ItemMeta swordItemMeta = sword.getItemMeta();

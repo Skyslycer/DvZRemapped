@@ -4,26 +4,47 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import me.lojosho.dvzremapped.DvZRemappedPlugin;
+import me.lojosho.dvzremapped.classes.PlayerClass;
+import me.lojosho.dvzremapped.classes.dwarves.Dwarves;
+import me.lojosho.dvzremapped.classes.monsters.Monsters;
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.user.UserStatus;
 import me.lojosho.dvzremapped.user.Users;
 import me.lojosho.dvzremapped.util.MessagesUtil;
+import me.lojosho.dvzremapped.util.PlayerUtil;
+import me.lojosho.dvzremapped.util.TimeUtil;
 import me.lojosho.dvzremapped.util.WorldGuardFlags;
 import net.kyori.adventure.bossbar.BossBar;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.Style;
+import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
 import org.bukkit.Material;
 import org.bukkit.World;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 
-import java.util.Random;
-import java.util.concurrent.TimeUnit;
+import java.time.Duration;
+import java.util.stream.Collectors;
 
 public class Game {
+
+    public static final String ALCHEMIST = "alchemist";
+    public static final String BLACKSMITH = "blacksmith";
+    public static final String BUILDER = "builder";
+    public static final String TAILOR = "tailor";
+    public static final String BROODMOTHER = "broodmother";
+    public static final String CREEPER = "creeper";
+    public static final String SKELETON = "skeleton";
+    public static final String ZOMBIE = "zombie";
+    public static final String SPIDER = "spider";
+
     public final static int SHRINE_MAX_HEALTH = 750;
     //private final static int MONSTER_RELEASE_TIME = 30;
     private static int monsterReleaseTime = 2100;
@@ -32,7 +53,8 @@ public class Game {
     private static int shrineHealth = -1;
     private static BossBar bossBar;
     private static GameStatus status;
-    private static int taskId;
+    private static BukkitTask task;
+    private static BukkitTask actionbarTask;
 
     public static void startGame() {
         if (status == GameStatus.RUNNING) return;
@@ -41,16 +63,22 @@ public class Game {
         status = GameStatus.RUNNING;
 
         for (Player player : Bukkit.getOnlinePlayers()) {
-            User user = Users.get(player.getUniqueId());
-            if (user.getStatus() == UserStatus.LIMBO) {
-                player.getInventory().clear();
-                player.getInventory().addItem(new ItemStack(Material.MAGMA_CREAM));
+            User user;
+            if (Users.contains(player.getUniqueId())) {
+                user = Users.get(player.getUniqueId());
+            } else {
+                user = new User(player);
+                Users.add(user);
             }
+            user.reset();
+            PlayerUtil.giveAll(player, PlayerClass.getRandomClassesItems(Dwarves.getRandomDwarfClasses()));
         }
 
         World world = DvZRemappedPlugin.getDwarfSpawn().getWorld();
         if (world != null) {
             world.setTime(0);
+            world.setStorm(false);
+            world.setThundering(false);
             world.setGameRule(GameRule.DO_IMMEDIATE_RESPAWN, true);
             world.setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
             world.setGameRule(GameRule.DO_INSOMNIA, false);
@@ -58,95 +86,77 @@ public class Game {
             world.setGameRule(GameRule.DO_PATROL_SPAWNING, false);
         }
 
-        Bukkit.broadcast(Component.text("DvZ has started! Fortuna Favors the bold! ").color(TextColor.color(0, 255, 0)));
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            player.showTitle(Title.title(Component.text("DvZ has started!").color(NamedTextColor.RED),
+                    Component.text("Fortuna favors the bold!").color(NamedTextColor.WHITE),
+                    Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(10), Duration.ofSeconds(2))));
+            player.playSound(Sound.sound(Key.key("entity.wither.spawn"), Sound.Source.MASTER, 1, 1));
+        });
 
         bossBar = BossBar.bossBar(Component.text("Shrine Health"), 1, BossBar.Color.PURPLE, BossBar.Overlay.PROGRESS);
 
-        BukkitRunnable run = new BukkitRunnable() {
-            @Override
-            public void run() {
-                timeCounted = timeCounted + 1;
+        task = Bukkit.getScheduler().runTaskTimer(DvZRemappedPlugin.getInstance(), () -> {
+            timeCounted = timeCounted + 1;
 
-                if (timeCounted == monsterReleaseTime) {
-                    Bukkit.broadcast(Component.text("A plague has ripped through the fortress! Monsters appear on the horizon...").color(TextColor.color(255, 0, 0)));
-                    int playerSize = Bukkit.getOnlinePlayers().size();
-                    int numberToKillDwarves = 2;
-
-                    if (playerSize >= 30) {
-                        numberToKillDwarves = Integer.parseInt(Integer.toString(playerSize).substring(0, 1)); // Takes first digit of number
-                    }
-
-                    int killedDwarves = 0; // From plague, kills 2 dwarves
-                    // Begin deciding monsters
-                    for (User user : Users.valuesRandomized()) {
-                        if (user.getStatus() == UserStatus.LIMBO) {
-                            Player player = user.getPlayer();
-                            player.getInventory().clear();
-                            player.getInventory().addItem(new ItemStack(Material.MAGMA_CREAM));
-                        }
-                        if (user.getStatus() == UserStatus.DWARF && killedDwarves < numberToKillDwarves) {
-                            user.getPlayer().setHealth(0);
-                            user.getPlayer().sendMessage(Component.text("You died of the plague... your soul walks free now. ").color(TextColor.color(255, 0, 0)));
-                            killedDwarves = killedDwarves + 1;
-                        }
-                    }
-                    world.strikeLightningEffect(DvZRemappedPlugin.getMonsterSpawn());
-                }
-                if (timeCounted == BOSS_RELEASE_TIME) {
-                    /*
-                    EnderDragon entity = (EnderDragon) DvZRemappedPlugin.getMonsterSpawn().getWorld().spawnEntity(DvZRemappedPlugin.getMonsterSpawn(), EntityType.ENDER_DRAGON);
-                    Bukkit.getMobGoals().getAllGoals(entity).clear();
-                    entity.setPhase(EnderDragon.Phase.STRAFING);
-                    //Bukkit.getMobGoals().addGoal(entity, 3, );
-                     */
-                    // Dragon spawns in
-                }
-                bossBar.progress((float) shrineHealth / SHRINE_MAX_HEALTH);
-                // Check any monsters in thing
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    User user = Users.get(player.getUniqueId());
-
-                    player.showBossBar(bossBar);
-
-                    if (user.getStatus().equals(UserStatus.MONSTER)) {
-                        for (final ProtectedRegion r : WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(player.getWorld()))
-                                .getApplicableRegions(BukkitAdapter.asBlockVector(player.getLocation()))) {
-                            if (r.getFlags().containsKey(WorldGuardFlags.getShrineFlag())) {
-                                if (r.getFlags().get(WorldGuardFlags.getShrineFlag()).toString().equalsIgnoreCase("ALLOW")) {
-                                    shrineHealth = shrineHealth - 1;
-                                    MessagesUtil.debug("Shrine is dying! " + shrineHealth);
-                                    if (shrineHealth % 100 == 0) {
-                                        Bukkit.broadcast(Component.text("Shrine health is now at " + shrineHealth + "/" + SHRINE_MAX_HEALTH));
-                                    }
-                                } else {
-                                    // Woah!...  He is out of the region!
-                                }
-                            }
-                        }
-                    }
-                }
-
-                checkEndGame(); // Checks if the game should end
+            if (timeCounted == monsterReleaseTime) {
+                runPlague(world);
             }
-        };
 
-        run.runTaskTimer(DvZRemappedPlugin.getInstance(), 0, 20);
-        taskId = run.getTaskId();
+            // Show updated shrine health
+            Bukkit.getOnlinePlayers().forEach(player -> player.showBossBar(bossBar));
+            bossBar.progress((float) shrineHealth / SHRINE_MAX_HEALTH);
 
+            // Check any monsters in shrine region
+            checkShrine();
+
+            // Checks if the game should end
+            checkEndGame();
+        }, 0, 20);
+
+        actionbarTask = Bukkit.getScheduler().runTaskTimerAsynchronously(DvZRemappedPlugin.getInstance(), () -> {
+            Users.values().stream().filter(user -> user.getPlayer().isOnline()).forEach(user -> {
+                if (user.getStatus() == UserStatus.LIMBO) {
+                    if (Game.isMonsterReleased()) {
+                        user.getPlayer().sendActionBar(MessagesUtil.processStringNoKey(user.getPlayer(),
+                                        "<dark_green>Broodmother: <reset>" + Users.getCounted(UserStatus.MONSTER, BROODMOTHER) +
+                                                " <light_purple>Spider: <reset>" + Users.getCounted(UserStatus.MONSTER, SPIDER) +
+                                                " <aqua>Zombie: <reset>" + Users.getCounted(UserStatus.MONSTER, ZOMBIE) +
+                                                " <white>Skeleton: <reset>" + Users.getCounted(UserStatus.MONSTER, SKELETON) +
+                                                " <red>Creeper: <reset>" + Users.getCounted(UserStatus.MONSTER, CREEPER)));
+                    } else {
+                        user.getPlayer().sendActionBar(MessagesUtil.processStringNoKey(user.getPlayer(),
+                                "<dark_purple>Alchemist: <reset>" + Users.getCounted(UserStatus.DWARF, ALCHEMIST) +
+                                        " <gray>Blacksmith: <reset>" + Users.getCounted(UserStatus.DWARF, BLACKSMITH) +
+                                        " <green>Builder: <reset>" + Users.getCounted(UserStatus.DWARF, BUILDER) +
+                                        " <blue>Tailor: <reset>" + Users.getCounted(UserStatus.DWARF, TAILOR)));
+                    }
+                } else if (user.getStatus() == UserStatus.DWARF) {
+                    user.getPlayer().sendActionBar(Component.empty());
+                }
+            });
+        }, 0, 2);
     }
 
     public static void endGame() {
+        System.out.println("end");
         if (status != GameStatus.RUNNING) return;
         status = GameStatus.WAITING;
-        Bukkit.getScheduler().cancelTask(taskId);
+        task.cancel();
+        actionbarTask.cancel();
 
         for (User user : Users.values()) {
+            if (!user.getPlayer().isOnline()) {
+                Users.remove(user.getPlayer().getUniqueId());
+                continue;
+            }
             user.reset();
-            World world = Bukkit.getWorld("world");
-            if (bossBar != null) user.getPlayer().hideBossBar(bossBar);
+            user.getPlayer().playSound(Sound.sound(Key.key("entity.ender_dragon.death"), Sound.Source.MASTER, 1, 1));
+            user.getPlayer().showTitle(Title.title(Component.text("DvZ has ended!").color(NamedTextColor.RED),
+                    Component.text(TimeUtil.formatTime(timeCounted)).color(NamedTextColor.WHITE),
+                    Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(10), Duration.ofSeconds(2))));
+            user.getPlayer().sendActionBar(Component.empty());
+            hideBossBar(user.getPlayer());
         }
-
-        Bukkit.broadcast(Component.text("DvZ has ended. Total Time: " + TimeUnit.SECONDS.toMinutes(timeCounted) + "m"));
         timeCounted = -1;
     }
 
@@ -154,20 +164,70 @@ public class Game {
         if (status != GameStatus.RUNNING) return;
         // Do not end in the first 60 seconds
         if (timeCounted >= 60) {
-            if (shrineHealth < 0 || Users.getDwarvesCounted() == 0) {
+            //TODO  || Bukkit.getOnlinePlayers().size() == 0
+            if (shrineHealth <= 0 || (isMonsterReleased() && Users.getCounted(UserStatus.DWARF) <= 0)) {
                 endGame();
             }
         }
     }
 
+    private static void checkShrine() {
+        Users.values().stream().filter(user -> user.getStatus() == UserStatus.MONSTER)
+                .map(User::getPlayer).forEach(player -> {
+                    for (final ProtectedRegion r : WorldGuard.getInstance().getPlatform().getRegionContainer().get(BukkitAdapter.adapt(player.getWorld()))
+                            .getApplicableRegions(BukkitAdapter.asBlockVector(player.getLocation()))) {
+                        if (r.getFlags().containsKey(WorldGuardFlags.getShrineFlag()) && r.getFlags().get(WorldGuardFlags.getShrineFlag())
+                                .toString().equalsIgnoreCase("ALLOW")) {
+                            shrineHealth = shrineHealth - 1;
+                            MessagesUtil.debug("Shrine is dying! " + shrineHealth);
+                            if (shrineHealth % 100 == 0) {
+                                Bukkit.broadcast(Component.text("Shrine health is now at " + shrineHealth + "/" + SHRINE_MAX_HEALTH));
+                            }
+                            break;
+                        }
+                    }
+                });
+    }
+
+    private static void runPlague(World world) {
+        Bukkit.broadcast(Component.text("A plague has ripped through the fortress! Monsters appear on the horizon...").color(NamedTextColor.RED));
+        Bukkit.getOnlinePlayers().forEach(player -> {
+            player.playSound(Sound.sound(Key.key("ambient.cave"), Sound.Source.MASTER, 1, 1));
+            player.showTitle(Title.title(Component.text("The Plague").color(NamedTextColor.RED),
+                    Component.text("Monster appear on the horizon...").color(NamedTextColor.WHITE),
+                    Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(2), Duration.ofSeconds(1))));
+        });
+        int playerSize = Bukkit.getOnlinePlayers().size();
+        int numberToKillDwarves = (int) Math.max(playerSize * 0.1, 1); // 10% of players, or 1, whichever is higher
+
+        int killedDwarves = 0; // From plague, kills 2 dwarves
+        // Begin deciding monsters
+        for (User user : Users.valuesRandomized()) {
+            if (user.getStatus() == UserStatus.LIMBO) {
+                Player player = user.getPlayer();
+                player.getInventory().clear();
+                PlayerUtil.giveAll(player, PlayerClass.getRandomClassesItems(Monsters.getRandomMonsterClasses()));
+            }
+            if (user.getStatus() == UserStatus.DWARF && killedDwarves < numberToKillDwarves) {
+                user.getPlayer().setHealth(0);
+                user.getPlayer().sendMessage(Component.text("You died of the plague... your soul walks free now.").color(NamedTextColor.DARK_GREEN).style(Style.style(TextDecoration.ITALIC)));
+                user.getPlayer().sendMessage(Component.text("Destroy the shrine you worked so hard to protect!").color(NamedTextColor.RED).style(Style.style(TextDecoration.BOLD)));
+                killedDwarves = killedDwarves + 1;
+            }
+        }
+        world.strikeLightningEffect(DvZRemappedPlugin.getMonsterSpawn());
+    }
+
+    public static void hideBossBar(Player player) {
+        if (bossBar != null) player.hideBossBar(bossBar);
+    }
+
     public static boolean isGameStart() {
-        if (timeCounted != -1) return true;
-        return false;
+        return status == GameStatus.RUNNING;
     }
 
     public static boolean isMonsterReleased() {
-        if (timeCounted >= monsterReleaseTime) return true;
-        return false;
+        return timeCounted >= monsterReleaseTime;
     }
 
     public static GameStatus getStatus() {

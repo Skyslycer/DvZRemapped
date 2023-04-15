@@ -1,5 +1,6 @@
 package me.lojosho.dvzremapped.user;
 
+import me.lojosho.dvzremapped.classes.PlayerClass;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -33,7 +34,8 @@ public class Users {
      * @param uuid {@link UUID UUID} whose mapped {@link User user} is to be returned
      * @return The mapped {@link User user} associated with the specified {@link UUID uuid}, or {@code null} if there is no mapped {@link User user} for the {@link UUID uuid}
      */
-    public static @Nullable User get(@NotNull UUID uuid) {
+    public static @Nullable User get(UUID uuid) {
+        if (uuid == null) return null;
         return users.get(uuid);
     }
 
@@ -46,22 +48,21 @@ public class Users {
     }
 
     public static @NotNull Collection<@Nullable User> valuesRandomized() {
-        List<User> randomList = users.values().stream().toList();
+        List<User> randomList = new ArrayList<>(users.values());
         Collections.shuffle(randomList);
         return randomList;
     }
 
     public static boolean contains(UUID uniqueId) {
-        return values().contains(uniqueId);
+        return values().stream().map(User::getUniqueId).toList().contains(uniqueId);
     }
 
-    public static int getDwarvesCounted() {
-        int amount = 0;
-        for (User user : values()) {
-            if (user.getStatus() == UserStatus.DWARF) {
-                amount = amount + 1;
-            }
-        }
-        return amount;
+    public static int getCounted(UserStatus status) {
+        return values().stream().filter(user -> user.getPlayer().isOnline()).filter(user -> user.getStatus() == status).toList().size();
+    }
+
+    public static int getCounted(UserStatus status, String id) {
+        return values().stream().filter(user -> user.getPlayer().isOnline()).filter(user -> user.getStatus() == status)
+                .filter(user -> user.getUserClass().getId().equals(id)).toList().size();
     }
 }

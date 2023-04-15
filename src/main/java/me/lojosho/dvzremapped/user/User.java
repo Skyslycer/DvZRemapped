@@ -2,21 +2,25 @@ package me.lojosho.dvzremapped.user;
 
 import me.libraryaddict.disguise.DisguiseAPI;
 import me.lojosho.dvzremapped.DvZRemappedPlugin;
-import me.lojosho.dvzremapped.classes.Class;
+import me.lojosho.dvzremapped.classes.PlayerClass;
 import me.lojosho.dvzremapped.classes.dwarves.Dwarf;
 import me.lojosho.dvzremapped.classes.monsters.Monster;
+import me.lojosho.dvzremapped.game.Game;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
 public class User {
-    private final Player player;
     private final UUID uuid;
+    private Player player;
     private UserStatus status;
+    private Location logoutLocation;
 
-    private Class userClass;
+    private PlayerClass userClass;
     private long lastSkillUse = -1;
 
     public User(@NotNull Player player) {
@@ -26,7 +30,7 @@ public class User {
     }
 
     // Todo Take a look at this method and test it some other time
-    public void convert(@NotNull Class userClass) {
+    public void convert(@NotNull PlayerClass userClass) {
         player.getInventory().clear();
 
         for (PotionEffect effect : getPlayer().getActivePotionEffects()) {
@@ -52,9 +56,9 @@ public class User {
         Player player = getPlayer();
         player.getInventory().clear();
         userClass = dwarf;
-        dwarf.setup(this);
         setStatus(UserStatus.DWARF);
         player.teleport(DvZRemappedPlugin.getDwarfSpawn());
+        dwarf.setup(this);
     }
 
     public void turnMonster(Monster monster) {
@@ -67,10 +71,14 @@ public class User {
     }
 
     public void reset() {
+        System.out.println("sd");
+        logoutLocation = null;
         userClass = null;
         setStatus(UserStatus.LIMBO);
+        if (!getPlayer().isOnline()) return;
         getPlayer().getInventory().clear();
         getPlayer().teleport(DvZRemappedPlugin.getJoinLocation());
+        Game.hideBossBar(getPlayer());
         for (PotionEffect effect : getPlayer().getActivePotionEffects()) {
             getPlayer().removePotionEffect(effect.getType());
         }
@@ -99,7 +107,7 @@ public class User {
         return status;
     }
 
-    public Class getUserClass() {
+    public PlayerClass getUserClass() {
         return userClass;
     }
 
@@ -111,6 +119,21 @@ public class User {
         return player;
     }
 
+    // Use with caution
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
     // Not safe for outside classes to call this method
     private void setStatus(@NotNull UserStatus status) { this.status = status; }
+
+    @Nullable
+    public Location getLogoutLocation() {
+        return logoutLocation;
+    }
+
+    public void setLogoutLocation(@Nullable Location logoutLocation) {
+        this.logoutLocation = logoutLocation;
+    }
+
 }

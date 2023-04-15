@@ -1,8 +1,8 @@
 package me.lojosho.dvzremapped.classes.dwarves;
 
+import me.lojosho.dvzremapped.classes.PlayerClass;
 import me.lojosho.dvzremapped.util.MessagesUtil;
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,9 +50,9 @@ public final class Dwarves {
     }
 
 
-    public static List<Dwarf> getRandomDwarfClasses() {
+    public static List<PlayerClass> getRandomDwarfClasses() {
         Random random = new Random();
-        List<Dwarf> classes = new ArrayList<>();
+        List<PlayerClass> classes = new ArrayList<>();
         for (Dwarf dwarfclass : dwarves.values()) {
             float randomnumber = random.nextFloat(0, 1);
             MessagesUtil.debug("Random # is " + randomnumber);
@@ -61,15 +61,6 @@ public final class Dwarves {
             }
         }
         return classes;
-    }
-
-    public static List<ItemStack> getRandomDwarfClassesItems() {
-        List<Dwarf> classes = getRandomDwarfClasses();
-        List<ItemStack> items = new ArrayList<>();
-        for (Dwarf dwarf : classes) {
-            items.add(new ItemStack(dwarf.getSelectionMaterial()));
-        }
-        return items;
     }
 
     public static Dwarf getDwarfClass(Material material) {

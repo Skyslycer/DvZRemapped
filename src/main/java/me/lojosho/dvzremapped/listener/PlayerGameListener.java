@@ -1,17 +1,18 @@
 package me.lojosho.dvzremapped.listener;
 
 import me.lojosho.dvzremapped.DvZRemappedPlugin;
+import me.lojosho.dvzremapped.classes.PlayerClass;
 import me.lojosho.dvzremapped.classes.dwarves.Dwarf;
 import me.lojosho.dvzremapped.classes.dwarves.Dwarves;
-import me.lojosho.dvzremapped.game.Game;
 import me.lojosho.dvzremapped.classes.monsters.Monster;
 import me.lojosho.dvzremapped.classes.monsters.Monsters;
+import me.lojosho.dvzremapped.game.Game;
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.user.UserStatus;
 import me.lojosho.dvzremapped.user.Users;
-import me.lojosho.dvzremapped.util.MessagesUtil;
+import me.lojosho.dvzremapped.util.PlayerUtil;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -23,74 +24,37 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.inventory.ItemStack;
-import org.codehaus.plexus.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 public class PlayerGameListener implements Listener {
 
     @EventHandler
     public void onPlayerInteract(@NotNull PlayerInteractEvent event) {
-
         Player player = event.getPlayer();
         Material selectionMaterial = player.getInventory().getItemInMainHand().getType();
         User user = Users.get(player.getUniqueId());
 
-        if (user == null) {
-            //MessagesUtil.debug("User is null");
-            return;
-        }
-        if (!Game.isGameStart()) {
-            //MessagesUtil.debug("Game start is false");
+        if (user == null || !Game.isGameStart()) {
             return;
         }
 
         if (user.getStatus().equals(UserStatus.LIMBO)) {
-            if (event.getAction().isLeftClick()) {
-                if (Game.isMonsterReleased()) {
-                    Monster monster = Monsters.getMonsterClass(selectionMaterial);
-                    if (monster != null) {
-                        user.turnMonster(monster);
-                    }
-                } else {
-                    Dwarf dwarf = Dwarves.getDwarfClass(selectionMaterial);
-                    if (dwarf != null) {
-                        user.turnDwarf(dwarf);
-                    }
+            if (Game.isMonsterReleased()) {
+                Monster monster = Monsters.getMonsterClass(selectionMaterial);
+                if (monster != null) {
+                    user.turnMonster(monster);
                 }
-                return;
-            }
-            if (selectionMaterial.equals(Material.MAGMA_CREAM)) {
-                player.getInventory().clear();
-                if (Game.isMonsterReleased()) {
-                    for (ItemStack item : Monsters.getRandomMonsterClassesItems()) {
-                        player.getInventory().addItem(item);
-                        MessagesUtil.debug("Item Give Monster");
-                    }
-                } else {
-                    for (ItemStack item : Dwarves.getRandomDwarfClassesItems()) {
-                        player.getInventory().addItem(item);
-                        MessagesUtil.debug("Item Give Dwarf");
-                    }
+            } else {
+                Dwarf dwarf = Dwarves.getDwarfClass(selectionMaterial);
+                if (dwarf != null) {
+                    user.turnDwarf(dwarf);
                 }
             }
-            Dwarf dwarf = Dwarves.getDwarfClass(selectionMaterial);
-            if (dwarf != null) {
-                player.sendMessage(Component.text("You sense this spell contains the " + StringUtils.capitalizeFirstLetter(dwarf.getId()) + " class!").color(TextColor.color(85, 85, 255)));
-                return;
-            }
-            Monster monster = Monsters.getMonsterClass(selectionMaterial);
-            if (monster != null) {
-                player.sendMessage(Component.text("You sense this spell contains the " + StringUtils.capitalizeFirstLetter(monster.getId()) + " class!").color(TextColor.color(85, 85, 255)));
-                return;
-            }
-        }
-        if (user.getStatus().equals(UserStatus.DWARF)) {
+        } else if (user.getStatus().equals(UserStatus.DWARF)) {
             if (selectionMaterial.equals(Material.BOOK)) {
                 user.runSkill();
             }
-        }
-        if (user.getStatus().equals(UserStatus.MONSTER)) {
+        } else if (user.getStatus().equals(UserStatus.MONSTER)) {
             if (event.getClickedBlock() != null) {
                 if (event.getClickedBlock().getType().equals(Material.CHEST) || event.getClickedBlock().getType().equals(Material.CRAFTING_TABLE) || event.getClickedBlock().getType().equals(Material.FURNACE)) {
                     event.setCancelled(true);
@@ -116,16 +80,16 @@ public class PlayerGameListener implements Listener {
         if (user.getStatus().equals(UserStatus.DWARF)) {
             if (Game.isMonsterReleased()) {
                 user.reset();
-                int dwarves = Users.getDwarvesCounted();
+                int dwarves = Users.getCounted(UserStatus.DWARF);
                 if (dwarves != 0) {
-                    event.deathMessage(Component.text(player.getName() + " has fallen! There are " + dwarves + " Dwarves left! ").color(TextColor.color(255, 0, 0)));
+                    event.deathMessage(Component.text(player.getName() + " has fallen! There are " + dwarves + " Dwarves left! ").color(NamedTextColor.RED));
                 } else {
-                    event.deathMessage(Component.text(player.getName() + " has fallen! The fortress is lost...").color(TextColor.color(255, 0, 0)));
+                    event.deathMessage(Component.text(player.getName() + " has fallen! The fortress is lost...").color(NamedTextColor.RED));
                 }
             } else {
                 event.setKeepInventory(true);
                 event.getDrops().clear();
-                //event.deathMessage(Component.empty());
+                event.deathMessage(Component.text(player.getName() + " has fallen, but will be revived! The fortress is safe for now...").color(NamedTextColor.RED));
             }
         }
         if (user.getStatus().equals(UserStatus.MONSTER)) {
@@ -151,7 +115,12 @@ public class PlayerGameListener implements Listener {
             return;
         }
 
-        if (Game.isGameStart()) user.getPlayer().getInventory().addItem(new ItemStack(Material.MAGMA_CREAM));
+        if (Game.isMonsterReleased()) {
+            PlayerUtil.giveAll(player, PlayerClass.getRandomClassesItems(Monsters.getRandomMonsterClasses()));
+        } else {
+            PlayerUtil.giveAll(player, PlayerClass.getRandomClassesItems(Dwarves.getRandomDwarfClasses()));
+        }
+
         event.setRespawnLocation(DvZRemappedPlugin.getJoinLocation());
     }
 

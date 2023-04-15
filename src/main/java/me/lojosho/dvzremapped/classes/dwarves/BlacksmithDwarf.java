@@ -1,12 +1,16 @@
 package me.lojosho.dvzremapped.classes.dwarves;
 
+import me.lojosho.dvzremapped.game.Game;
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.util.MessagesUtil;
+import me.lojosho.dvzremapped.util.PlayerUtil;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.TitlePart;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -23,30 +27,30 @@ public class BlacksmithDwarf extends Dwarf {
     List<ItemStack> items = List.of(new ItemStack(Material.DIAMOND_PICKAXE), new ItemStack(Material.FEATHER, 32), new ItemStack(Material.FLINT, 32), new ItemStack(Material.STRING, 3), new ItemStack(Material.SHIELD), new ItemStack(Material.BLAZE_ROD, 4));
 
     public BlacksmithDwarf() {
-        super("blacksmith", Material.MUSIC_DISC_STAL, .3f);
+        super(Game.BLACKSMITH, Material.MUSIC_DISC_STAL, NamedTextColor.GRAY, ChatColor.GRAY, .3f,
+                List.of("Transmutate clocks to get", "powerful swords to slay monsters!"), 2000);
     }
 
     @Override
     public void transmute(@NotNull User user) {
+        super.setup(user);
         Player player = user.getPlayer();
 
-        if (!isSkillReady(user, 2000)) {
-            MessagesUtil.sendMessage(player, "<#CE4B9C>Your transmutation is on cooldown! ");
+        if (!checkSkillReady(user)) {
             return;
         }
 
         ItemStack clock = new ItemStack(Material.CLOCK);
-
         Random random = new Random();
 
         if (player.getInventory().containsAtLeast(clock, 3)) {
-            player.getInventory().removeItem(clock.asQuantity(3));
-            player.getInventory().addItem(new ItemStack(Material.COAL, 8));
-            player.getInventory().addItem(new ItemStack(Material.BLAZE_ROD, 2));
-            player.getInventory().addItem(new ItemStack(Material.DIAMOND_SWORD));
+            player.getInventory().removeItem(clock, clock, clock);
+            PlayerUtil.give(player, new ItemStack(Material.COAL, 8));
+            PlayerUtil.give(player, new ItemStack(Material.BLAZE_ROD, 2));
+            PlayerUtil.give(player, new ItemStack(Material.DIAMOND_SWORD));
             for (ItemStack item : items) {
                 int chance = random.nextInt(0, 3);
-                if (chance == 1) player.getInventory().addItem(item.clone());
+                if (chance == 1) PlayerUtil.give(player, item.clone());
             }
 
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
@@ -88,12 +92,6 @@ public class BlacksmithDwarf extends Dwarf {
 
         player.getInventory().addItem(book, ironPick, item1, item2, item3, item4, item5, item6, item7, item8);
 
-        player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-
-        player.sendTitlePart(TitlePart.TIMES, Title.Times.times(Duration.ofMillis(1000), Duration.ofMillis(3000), Duration.ofMillis(1000)));
-        player.sendTitlePart(TitlePart.SUBTITLE, Component.text("Fortuna Favors the Bold!").color(TextColor.color(0, 255, 0)));
-        player.sendTitlePart(TitlePart.TITLE, Component.text(" "));
-        // <gray>Transmutes <WHITE>2x Orange Dye <gray>to <WHITE>Diamond Armor + 10x Gold Ore + Food
         MessagesUtil.sendMessage(player, "<br><#CE4B9C>You picked the Blacksmith class! <br><br><#CE4B9C>Transmutation Skill <br><gray>Transmutes <WHITE>3x Clocks <gray>to <br><WHITE>  Diamond Sword + Blaze Rod + Coal <br><WHITE>  (%) Flint + String + Feathers<br>");
     }
 }

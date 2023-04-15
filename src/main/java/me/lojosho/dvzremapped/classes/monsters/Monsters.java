@@ -1,8 +1,8 @@
 package me.lojosho.dvzremapped.classes.monsters;
 
+import me.lojosho.dvzremapped.classes.PlayerClass;
 import me.lojosho.dvzremapped.util.MessagesUtil;
 import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,9 +36,9 @@ public class Monsters {
         return monsters.get(id.toLowerCase());
     }
 
-    public static List<Monster> getRandomMonsterClasses() {
+    public static List<PlayerClass> getRandomMonsterClasses() {
         Random random = new Random();
-        List<Monster> classes = new ArrayList<>();
+        List<PlayerClass> classes = new ArrayList<>();
         for (Monster monster : monsters.values()) {
             float randomnumber = random.nextFloat(0, 1);
             MessagesUtil.debug("Random # is " + randomnumber);
@@ -47,15 +47,6 @@ public class Monsters {
             }
         }
         return classes;
-    }
-
-    public static List<ItemStack> getRandomMonsterClassesItems() {
-        List<Monster> classes = getRandomMonsterClasses();
-        List<ItemStack> items = new ArrayList<>();
-        for (Monster monster : classes) {
-            items.add(new ItemStack(monster.getSelectionMaterial()));
-        }
-        return items;
     }
 
     public static Monster getMonsterClass(Material material) {

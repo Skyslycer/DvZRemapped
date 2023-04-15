@@ -1,10 +1,10 @@
 package me.lojosho.dvzremapped.classes.monsters;
 
-import me.libraryaddict.disguise.disguisetypes.Disguise;
-import me.libraryaddict.disguise.disguisetypes.DisguiseType;
-import me.libraryaddict.disguise.disguisetypes.MobDisguise;
+import me.lojosho.dvzremapped.game.Game;
 import me.lojosho.dvzremapped.user.User;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -14,10 +14,13 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class BroodmotherMonster extends Monster {
 
     public BroodmotherMonster() {
-        super("Broodmother", Material.MUSIC_DISC_WARD, .05f, EntityType.SILVERFISH);
+        super(Game.BROODMOTHER, Material.MUSIC_DISC_WARD, NamedTextColor.DARK_GREEN, ChatColor.DARK_GREEN, .05f, EntityType.SILVERFISH,
+                List.of("Spawn silverfish and", "attack the fortress!"), 20000);
     }
 
     @Override
@@ -27,8 +30,7 @@ public class BroodmotherMonster extends Monster {
         if (heldItem == null) return;
         if (heldItem.getType().equals(Material.GRAY_DYE)) {
 
-            if (!isSkillReady(user, 30000)) {
-                player.sendMessage(Component.text("Ability is on cooldown! "));
+            if (!checkSkillReady(user)) {
                 return;
             }
 
@@ -47,17 +49,15 @@ public class BroodmotherMonster extends Monster {
     @Override
     public void setup(@NotNull User user) {
         Player player = user.getPlayer();
+        super.setup(user);
 
-        Disguise disguise = new MobDisguise(DisguiseType.getType(getEntityType()));
-        disguise.setEntity(user.getPlayer());
-        disguise.setSelfDisguiseVisible(true);
-        disguise.setHidePlayer(true);
-        disguise.setMobsIgnoreDisguise(true);
-        disguise.startDisguise();
-        //DisguiseAPI.disguiseToAll(player, disguise);
+        var item = new ItemStack(Material.GRAY_DYE, 1);
+        var meta = item.getItemMeta();
+        meta.displayName(Component.text("Spawn Silverfish", getColor()));
+        meta.lore(List.of(Component.text("Spawn silverfish to distract the guards!", NamedTextColor.WHITE)));
+        item.setItemMeta(meta);
 
-        player.getInventory().clear();
-        player.getInventory().addItem(new ItemStack(Material.GRAY_DYE, 1));
+        player.getInventory().addItem(item);
         player.getInventory().addItem(new ItemStack(Material.COOKED_BEEF, 64));
         player.getInventory().addItem(new ItemStack(Material.INFESTED_STONE_BRICKS, 4));
 

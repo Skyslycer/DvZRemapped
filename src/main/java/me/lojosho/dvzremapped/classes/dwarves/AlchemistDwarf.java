@@ -1,12 +1,16 @@
 package me.lojosho.dvzremapped.classes.dwarves;
 
+import me.lojosho.dvzremapped.game.Game;
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.util.MessagesUtil;
+import me.lojosho.dvzremapped.util.PlayerUtil;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.TitlePart;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -30,7 +34,8 @@ public class AlchemistDwarf extends Dwarf {
     private static ItemStack potionOfFireResistance;
 
     public AlchemistDwarf() {
-        super("alchemist", Material.MUSIC_DISC_MELLOHI, .3f);
+        super(Game.ALCHEMIST, Material.MUSIC_DISC_MELLOHI, NamedTextColor.DARK_PURPLE, ChatColor.DARK_PURPLE,
+                .5f, List.of("Transmutate mundane potions to get", "potions to save and powerup dwarves!"), 2000);
 
         // Set up potions
 
@@ -71,8 +76,7 @@ public class AlchemistDwarf extends Dwarf {
     public void transmute(@NotNull User user) {
         Player player = user.getPlayer();
 
-        if (!isSkillReady(user, 2000)) {
-            MessagesUtil.sendMessage(player, "<#CE4B9C>Your transmutation is on cooldown! ");
+        if (!checkSkillReady(user)) {
             return;
         }
 
@@ -81,24 +85,23 @@ public class AlchemistDwarf extends Dwarf {
         Random random = new Random();
 
         if (player.getInventory().containsAtLeast(mundanePotion, 3)) {
-            player.getInventory().removeItem(mundanePotion);
-            player.getInventory().removeItem(mundanePotion);
-            player.getInventory().removeItem(mundanePotion);
-            player.getInventory().addItem(new ItemStack(Material.BONE, random.nextInt(3, 8)));
-            player.getInventory().addItem(new ItemStack(Material.MILK_BUCKET, random.nextInt(1, 2)));
-            player.getInventory().addItem(new ItemStack(Material.SAND, 9));
-            player.getInventory().addItem(new ItemStack(Material.REDSTONE, 8));
+            player.getInventory().removeItem(mundanePotion, mundanePotion, mundanePotion);
+            PlayerUtil.give(player, new ItemStack(Material.BONE, random.nextInt(3, 8)));
+            PlayerUtil.give(player, new ItemStack(Material.MILK_BUCKET, random.nextInt(1, 2)));
+            PlayerUtil.give(player, new ItemStack(Material.SAND, 9));
+            PlayerUtil.give(player, new ItemStack(Material.REDSTONE, 8));
             if (random.nextInt(1, 3) != 1) {
-                player.getInventory().addItem(potionOfHealing.clone());
-                player.getInventory().addItem(potionOfHealing.clone());
+                for (int i = 0; i < 2; i++) {
+                    PlayerUtil.give(player, potionOfHealing.clone());
+                }
             } else {
-                player.getInventory().addItem(potionOfSwiftness.clone());
+                PlayerUtil.give(player, potionOfSwiftness.clone());
             }
             // Either Strength or Fire Resistance
             if (random.nextInt(1, 3) == 1) {
-                player.getInventory().addItem(potionOfFireResistance.clone());
+                PlayerUtil.give(player, potionOfFireResistance.clone());
             } else {
-                player.getInventory().addItem(potionOfStrength.clone());
+                PlayerUtil.give(player, potionOfStrength.clone());
             }
 
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
@@ -113,6 +116,7 @@ public class AlchemistDwarf extends Dwarf {
 
     @Override
     public void setup(@NotNull User user) {
+        super.setup(user);
         Player player = user.getPlayer();
 
         // Transmutable Item
@@ -141,10 +145,6 @@ public class AlchemistDwarf extends Dwarf {
         player.getInventory().addItem(book, item1, item2, item3, item4, item5, item6, item7, item8, item9);
 
         player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-
-        player.sendTitlePart(TitlePart.TIMES, Title.Times.times(Duration.ofMillis(1000), Duration.ofMillis(3000), Duration.ofMillis(1000)));
-        player.sendTitlePart(TitlePart.SUBTITLE, Component.text("Fortuna Favors the Bold!").color(TextColor.color(0, 255, 0)));
-        player.sendTitlePart(TitlePart.TITLE, Component.text(" "));
 
         MessagesUtil.sendMessage(player, "<br><#CE4B9C>You picked the Alchemist class! <br><br><#CE4B9C>Transmutation Skill <br><GRAY>Transmutes <WHITE>3x Mundane Potions <gray>to <br><WHITE>   Potions + Milk + Bones + Redstone + Sand <br>");
     }
