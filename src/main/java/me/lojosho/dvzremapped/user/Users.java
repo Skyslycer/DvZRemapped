@@ -33,7 +33,8 @@ public class Users {
      * @param uuid {@link UUID UUID} whose mapped {@link User user} is to be returned
      * @return The mapped {@link User user} associated with the specified {@link UUID uuid}, or {@code null} if there is no mapped {@link User user} for the {@link UUID uuid}
      */
-    public static @Nullable User get(@NotNull UUID uuid) {
+    public static @Nullable User get(UUID uuid) {
+        if (uuid == null) return null;
         return users.get(uuid);
     }
 
@@ -55,13 +56,7 @@ public class Users {
         return values().contains(uniqueId);
     }
 
-    public static int getDwarvesCounted() {
-        int amount = 0;
-        for (User user : values()) {
-            if (user.getStatus() == UserStatus.DWARF) {
-                amount = amount + 1;
-            }
-        }
-        return amount;
+    public static int getCounted(UserStatus status) {
+        return values().stream().filter(user -> user.getStatus() == status).toList().size();
     }
 }

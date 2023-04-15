@@ -1,12 +1,11 @@
 package me.lojosho.dvzremapped.classes.monsters;
 
-import me.libraryaddict.disguise.disguisetypes.Disguise;
-import me.libraryaddict.disguise.disguisetypes.DisguiseType;
-import me.libraryaddict.disguise.disguisetypes.MobDisguise;
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.user.UserStatus;
 import me.lojosho.dvzremapped.user.Users;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -19,7 +18,7 @@ import org.jetbrains.annotations.NotNull;
 public class SpiderMonster extends Monster {
 
     public SpiderMonster() {
-        super("spider", Material.MUSIC_DISC_MALL, .15f, EntityType.SPIDER);
+        super("spider", Material.MUSIC_DISC_MALL, NamedTextColor.LIGHT_PURPLE, ChatColor.LIGHT_PURPLE, .15f, EntityType.SPIDER, "Blind and confuse the dwarves with your skill!");
     }
 
     @Override
@@ -50,15 +49,8 @@ public class SpiderMonster extends Monster {
     @Override
     public void setup(@NotNull User user) {
         Player player = user.getPlayer();
+        super.setup(user);
 
-        Disguise disguise = new MobDisguise(DisguiseType.getType(getEntityType()));
-        disguise.setEntity(user.getPlayer());
-        disguise.setSelfDisguiseVisible(true);
-        disguise.setHidePlayer(true);
-        disguise.startDisguise();
-        //DisguiseAPI.disguiseToAll(player, disguise);
-
-        player.getInventory().clear();
         player.getInventory().addItem(new ItemStack(Material.SPIDER_EYE, 1));
         player.getInventory().addItem(new ItemStack(Material.COOKED_BEEF, 64));
         player.getInventory().addItem(new ItemStack(Material.VINE, 6));

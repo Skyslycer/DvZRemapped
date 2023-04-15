@@ -3,10 +3,12 @@ package me.lojosho.dvzremapped.classes.dwarves;
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.util.MessagesUtil;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.TitlePart;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -23,7 +25,7 @@ public class BuilderDwarf extends Dwarf {
     List<Material> blocks = List.of(Material.CRACKED_STONE_BRICKS, Material.MOSSY_STONE_BRICKS, Material.CHISELED_STONE_BRICKS, Material.STONE_BRICKS);
 
     public BuilderDwarf() {
-        super("builder", Material.MUSIC_DISC_CAT, 1);
+        super("builder", Material.MUSIC_DISC_CAT, NamedTextColor.GREEN, ChatColor.GREEN, 1, "Transmutate air to get blocks to build the fortress!");
     }
 
     @Override

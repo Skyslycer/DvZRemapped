@@ -2,21 +2,35 @@ package me.lojosho.dvzremapped.classes;
 
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.user.UserStatus;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.codehaus.plexus.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
-public abstract class Class {
+import java.util.ArrayList;
+import java.util.List;
+
+public abstract class PlayerClass {
     private final String id;
     private final Material selectionMaterial;
+    private final TextColor color;
+    private final ChatColor legacyColor;
+    private final String description;
     private final float chance;
     private final UserStatus type;
 
-    protected Class(@NotNull String id, @NotNull Material selectionMaterial, float chance, UserStatus type) {
+    protected PlayerClass(@NotNull String id, @NotNull Material selectionMaterial, TextColor color, ChatColor legacyColor, String description, float chance, UserStatus type) {
         this.id = id;
         this.selectionMaterial = selectionMaterial;
+        this.color = color;
+        this.legacyColor = legacyColor;
+        this.description = description;
         this.chance = chance;
         this.type = type;
     }
@@ -33,12 +47,24 @@ public abstract class Class {
         return selectionMaterial;
     }
 
+    public final TextColor getColor() {
+        return color;
+    }
+
+    public final String getDescription() {
+        return description;
+    }
+
     public final float getChance() {
         return chance;
     }
 
     public @NotNull UserStatus getType() {
         return type;
+    }
+
+    public ChatColor getLegacyColor() {
+        return legacyColor;
     }
 
     // Returns if a skill is ready
@@ -67,4 +93,18 @@ public abstract class Class {
         var drops = player.getInventory().addItem(itemStack);
         drops.values().forEach(left -> player.getLocation().getWorld().dropItemNaturally(player.getLocation(), left));
     }
+
+    public static List<ItemStack> getRandomClassesItems(List<PlayerClass> classes) {
+        List<ItemStack> items = new ArrayList<>();
+        for (PlayerClass type : classes) {
+            var item = new ItemStack(type.getSelectionMaterial());
+            var meta = item.getItemMeta();
+            meta.displayName(Component.text(StringUtils.capitalizeFirstLetter(type.getId())).color(type.getColor()));
+            meta.lore(List.of(Component.text(type.getDescription()).color(NamedTextColor.WHITE)));
+            item.setItemMeta(meta);
+            items.add(item);
+        }
+        return items;
+    }
+
 }

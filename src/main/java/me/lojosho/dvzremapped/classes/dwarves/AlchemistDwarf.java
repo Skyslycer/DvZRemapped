@@ -3,10 +3,12 @@ package me.lojosho.dvzremapped.classes.dwarves;
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.util.MessagesUtil;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.TitlePart;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -30,7 +32,7 @@ public class AlchemistDwarf extends Dwarf {
     private static ItemStack potionOfFireResistance;
 
     public AlchemistDwarf() {
-        super("alchemist", Material.MUSIC_DISC_MELLOHI, .3f);
+        super("alchemist", Material.MUSIC_DISC_MELLOHI, NamedTextColor.DARK_PURPLE, ChatColor.DARK_PURPLE, .5f, "Transmutate mundane potions to get potions to save and powerup dwarves!");
 
         // Set up potions
 

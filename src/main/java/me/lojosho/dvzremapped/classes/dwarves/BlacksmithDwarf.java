@@ -3,10 +3,12 @@ package me.lojosho.dvzremapped.classes.dwarves;
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.util.MessagesUtil;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.title.Title;
 import net.kyori.adventure.title.TitlePart;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -23,7 +25,7 @@ public class BlacksmithDwarf extends Dwarf {
     List<ItemStack> items = List.of(new ItemStack(Material.DIAMOND_PICKAXE), new ItemStack(Material.FEATHER, 32), new ItemStack(Material.FLINT, 32), new ItemStack(Material.STRING, 3), new ItemStack(Material.SHIELD), new ItemStack(Material.BLAZE_ROD, 4));
 
     public BlacksmithDwarf() {
-        super("blacksmith", Material.MUSIC_DISC_STAL, .3f);
+        super("blacksmith", Material.MUSIC_DISC_STAL, NamedTextColor.GRAY, ChatColor.GRAY, .3f, "Transmutate clocks to get powerful swords to slay monsters!");
     }
 
     @Override
@@ -36,7 +38,6 @@ public class BlacksmithDwarf extends Dwarf {
         }
 
         ItemStack clock = new ItemStack(Material.CLOCK);
-
         Random random = new Random();
 
         if (player.getInventory().containsAtLeast(clock, 3)) {

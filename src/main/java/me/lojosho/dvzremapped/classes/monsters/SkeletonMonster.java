@@ -1,9 +1,8 @@
 package me.lojosho.dvzremapped.classes.monsters;
 
-import me.libraryaddict.disguise.disguisetypes.Disguise;
-import me.libraryaddict.disguise.disguisetypes.DisguiseType;
-import me.libraryaddict.disguise.disguisetypes.MobDisguise;
 import me.lojosho.dvzremapped.user.User;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.EntityType;
@@ -20,7 +19,7 @@ import org.jetbrains.annotations.NotNull;
 public class SkeletonMonster extends Monster {
 
     public SkeletonMonster() {
-        super("skeleton", Material.MUSIC_DISC_STRAD, .25f, EntityType.SKELETON);
+        super("skeleton", Material.MUSIC_DISC_STRAD, NamedTextColor.WHITE, ChatColor.WHITE, .25f, EntityType.SKELETON, "Shoot the guards with flaming arrows!");
     }
 
     @Override
@@ -30,17 +29,8 @@ public class SkeletonMonster extends Monster {
 
     @Override
     public void setup(@NotNull User user) {
-
         Player player = user.getPlayer();
-
-        Disguise disguise = new MobDisguise(DisguiseType.getType(getEntityType()));
-        disguise.setEntity(user.getPlayer());
-        disguise.setSelfDisguiseVisible(true);
-        disguise.setHidePlayer(true);
-        disguise.startDisguise();
-        //DisguiseAPI.disguiseToAll(player, disguise);
-
-        player.getInventory().clear();
+        super.setup(user);
 
         ItemStack bow = new ItemStack(Material.BOW, 1);
         ItemMeta bowMeta = bow.getItemMeta();

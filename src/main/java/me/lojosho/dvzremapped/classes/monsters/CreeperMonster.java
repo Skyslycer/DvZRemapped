@@ -1,9 +1,8 @@
 package me.lojosho.dvzremapped.classes.monsters;
 
-import me.libraryaddict.disguise.disguisetypes.Disguise;
-import me.libraryaddict.disguise.disguisetypes.DisguiseType;
-import me.libraryaddict.disguise.disguisetypes.MobDisguise;
 import me.lojosho.dvzremapped.user.User;
+import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -15,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 public class CreeperMonster extends Monster {
 
     public CreeperMonster() {
-        super("creeper", Material.MUSIC_DISC_CHIRP, .15f, EntityType.CREEPER);
+        super("creeper", Material.MUSIC_DISC_CHIRP, NamedTextColor.RED, ChatColor.RED, .15f, EntityType.CREEPER, "Blow up the fortress with your explosive skill!");
     }
 
     @Override
@@ -31,17 +30,9 @@ public class CreeperMonster extends Monster {
 
     @Override
     public void setup(@NotNull User user) {
-
         Player player = user.getPlayer();
+        super.setup(user);
 
-        Disguise disguise = new MobDisguise(DisguiseType.getType(getEntityType()));
-        disguise.setEntity(user.getPlayer());
-        disguise.setSelfDisguiseVisible(true);
-        disguise.setHidePlayer(true);
-        disguise.startDisguise();
-        //DisguiseAPI.disguiseToAll(player, disguise);
-
-        player.getInventory().clear();
         player.getInventory().addItem(new ItemStack(Material.GUNPOWDER, 1));
         player.getInventory().addItem(new ItemStack(Material.COOKED_BEEF, 64));
 

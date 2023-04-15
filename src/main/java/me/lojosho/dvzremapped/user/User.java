@@ -2,9 +2,10 @@ package me.lojosho.dvzremapped.user;
 
 import me.libraryaddict.disguise.DisguiseAPI;
 import me.lojosho.dvzremapped.DvZRemappedPlugin;
-import me.lojosho.dvzremapped.classes.Class;
+import me.lojosho.dvzremapped.classes.PlayerClass;
 import me.lojosho.dvzremapped.classes.dwarves.Dwarf;
 import me.lojosho.dvzremapped.classes.monsters.Monster;
+import me.lojosho.dvzremapped.game.Game;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.jetbrains.annotations.NotNull;
@@ -16,7 +17,7 @@ public class User {
     private final UUID uuid;
     private UserStatus status;
 
-    private Class userClass;
+    private PlayerClass userClass;
     private long lastSkillUse = -1;
 
     public User(@NotNull Player player) {
@@ -26,7 +27,7 @@ public class User {
     }
 
     // Todo Take a look at this method and test it some other time
-    public void convert(@NotNull Class userClass) {
+    public void convert(@NotNull PlayerClass userClass) {
         player.getInventory().clear();
 
         for (PotionEffect effect : getPlayer().getActivePotionEffects()) {
@@ -69,8 +70,10 @@ public class User {
     public void reset() {
         userClass = null;
         setStatus(UserStatus.LIMBO);
+        if (!getPlayer().isOnline()) return;
         getPlayer().getInventory().clear();
         getPlayer().teleport(DvZRemappedPlugin.getJoinLocation());
+        Game.hideBossBar(getPlayer());
         for (PotionEffect effect : getPlayer().getActivePotionEffects()) {
             getPlayer().removePotionEffect(effect.getType());
         }
@@ -99,7 +102,7 @@ public class User {
         return status;
     }
 
-    public Class getUserClass() {
+    public PlayerClass getUserClass() {
         return userClass;
     }
 
