@@ -6,6 +6,7 @@ import me.libraryaddict.disguise.disguisetypes.MobDisguise;
 import me.lojosho.dvzremapped.classes.PlayerClass;
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.user.UserStatus;
+import me.lojosho.dvzremapped.util.MessagesUtil;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -16,14 +17,24 @@ public abstract class Monster extends PlayerClass {
     private final @NotNull EntityType type;
 
     public Monster(@NotNull String id, @NotNull Material selectionMaterial, @NotNull TextColor color, @NotNull ChatColor legacyColor,
-                   float chance, @NotNull EntityType type, @NotNull String description) {
-        super(id, selectionMaterial, color, legacyColor, description, chance, UserStatus.MONSTER);
+                   float chance, @NotNull EntityType type, @NotNull String description, long cooldown) {
+        super(id, selectionMaterial, color, legacyColor, description, chance, UserStatus.MONSTER, cooldown);
         Monsters.add(this);
         this.type = type;
     }
 
     public @NotNull EntityType getEntityType() {
         return type;
+    }
+
+    @Override
+    public boolean checkSkillReady(@NotNull User user) {
+        var time = getSkillTime(user, getCooldown());
+        if (time > 0) {
+            MessagesUtil.sendMessage(user.getPlayer(), "<#CE4B9C>Your ability is on cooldown! " + time + "s");
+            return false;
+        }
+        return true;
     }
 
     public void setup(@NotNull User user) {

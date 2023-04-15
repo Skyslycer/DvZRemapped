@@ -18,7 +18,8 @@ import org.jetbrains.annotations.NotNull;
 public class ZombieMonster extends Monster {
 
     public ZombieMonster() {
-        super("zombie", Material.MUSIC_DISC_WAIT, NamedTextColor.AQUA, ChatColor.AQUA, 1, EntityType.ZOMBIE, "Attack the fortress with all your might!");
+        super("zombie", Material.MUSIC_DISC_WAIT, NamedTextColor.AQUA, ChatColor.AQUA, 1, EntityType.ZOMBIE,
+                "Attack the fortress with all your might!", -1);
     }
 
     @Override

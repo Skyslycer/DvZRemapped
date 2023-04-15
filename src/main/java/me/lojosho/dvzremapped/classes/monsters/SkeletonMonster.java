@@ -19,7 +19,8 @@ import org.jetbrains.annotations.NotNull;
 public class SkeletonMonster extends Monster {
 
     public SkeletonMonster() {
-        super("skeleton", Material.MUSIC_DISC_STRAD, NamedTextColor.WHITE, ChatColor.WHITE, .25f, EntityType.SKELETON, "Shoot the guards with flaming arrows!");
+        super("skeleton", Material.MUSIC_DISC_STRAD, NamedTextColor.WHITE, ChatColor.WHITE, .25f, EntityType.SKELETON,
+                "Shoot the guards with flaming arrows!", -1);
     }
 
     @Override

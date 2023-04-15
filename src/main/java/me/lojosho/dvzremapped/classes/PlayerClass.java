@@ -24,8 +24,9 @@ public abstract class PlayerClass {
     private final String description;
     private final float chance;
     private final UserStatus type;
+    private final long cooldown;
 
-    protected PlayerClass(@NotNull String id, @NotNull Material selectionMaterial, TextColor color, ChatColor legacyColor, String description, float chance, UserStatus type) {
+    protected PlayerClass(@NotNull String id, @NotNull Material selectionMaterial, TextColor color, ChatColor legacyColor, String description, float chance, UserStatus type, long cooldown) {
         this.id = id;
         this.selectionMaterial = selectionMaterial;
         this.color = color;
@@ -33,6 +34,7 @@ public abstract class PlayerClass {
         this.description = description;
         this.chance = chance;
         this.type = type;
+        this.cooldown = cooldown;
     }
 
     public abstract void setup(@NotNull User user);
@@ -67,6 +69,12 @@ public abstract class PlayerClass {
         return legacyColor;
     }
 
+    public long getCooldown() {
+        return cooldown;
+    }
+
+    public abstract boolean checkSkillReady(@NotNull User user);
+
     // Returns if a skill is ready
     public final boolean isSkillReady(@NotNull User user, long cooldown) {
         if (user.getLastSkillUse() == -1) return true;
@@ -75,9 +83,9 @@ public abstract class PlayerClass {
 
     // Returns long of how much longer the skill takes
 
-    public final Long isSkillReady(@NotNull User user, long cooldown, boolean returns) {
-        if (user.getLastSkillUse() == -1) return (long) -1;
-        return System.currentTimeMillis() - user.getLastSkillUse();
+    public final long getSkillTime(@NotNull User user, long cooldown) {
+        if (user.getLastSkillUse() == -1) return -1;
+        return cooldown - (System.currentTimeMillis() - user.getLastSkillUse());
     }
 
     public final ItemStack unbreakableItem(Material material) {

@@ -25,15 +25,15 @@ public class BuilderDwarf extends Dwarf {
     List<Material> blocks = List.of(Material.CRACKED_STONE_BRICKS, Material.MOSSY_STONE_BRICKS, Material.CHISELED_STONE_BRICKS, Material.STONE_BRICKS);
 
     public BuilderDwarf() {
-        super("builder", Material.MUSIC_DISC_CAT, NamedTextColor.GREEN, ChatColor.GREEN, 1, "Transmutate air to get blocks to build the fortress!");
+        super("builder", Material.MUSIC_DISC_CAT, NamedTextColor.GREEN, ChatColor.GREEN, 1,
+                "Transmutate air to get blocks to build the fortress!", 10000);
     }
 
     @Override
     public void transmute(@NotNull User user) {
         Player player = user.getPlayer();
 
-        if (!isSkillReady(user, 10000)) {
-            MessagesUtil.sendMessage(player, "<#CE4B9C>Your transmutation is on cooldown! ");
+        if (!checkSkillReady(user)) {
             return;
         }
         Random ran = new Random();
@@ -53,6 +53,7 @@ public class BuilderDwarf extends Dwarf {
 
     @Override
     public void setup(@NotNull User user) {
+        super.setup(user);
         Player player = user.getPlayer();
 
         ItemStack book = new ItemStack(Material.BOOK);
@@ -81,12 +82,6 @@ public class BuilderDwarf extends Dwarf {
         player.getInventory().setChestplate(leather2);
         player.getInventory().setLeggings(leather3);
         player.getInventory().setBoots(leather4);
-
-        player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-
-        player.sendTitlePart(TitlePart.TIMES, Title.Times.times(Duration.ofMillis(1000), Duration.ofMillis(3000), Duration.ofMillis(1000)));
-        player.sendTitlePart(TitlePart.SUBTITLE, Component.text("Fortuna Favors the Bold!").color(TextColor.color(0, 255, 0)));
-        player.sendTitlePart(TitlePart.TITLE, Component.text(" "));
 
         MessagesUtil.sendMessage(player, "<br><#CE4B9C>You picked the builder class! <br><br><#CE4B9C>Transmutation Skill <br><gray>Transmutes <WHITE>Air <gray>to <WHITE>64x Stone Bricks + 3 Glowstone <br><WHITE>                        (%) Sticks + Experience<br>");
     }

@@ -13,10 +13,13 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class BroodmotherMonster extends Monster {
 
     public BroodmotherMonster() {
-        super("Broodmother", Material.MUSIC_DISC_WARD, NamedTextColor.DARK_GREEN, ChatColor.DARK_GREEN, .05f, EntityType.SILVERFISH, "Spawn silverfish and attack the fortress!");
+        super("Broodmother", Material.MUSIC_DISC_WARD, NamedTextColor.DARK_GREEN, ChatColor.DARK_GREEN, .05f, EntityType.SILVERFISH,
+                "Spawn silverfish and attack the fortress!", 20000);
     }
 
     @Override
@@ -26,8 +29,7 @@ public class BroodmotherMonster extends Monster {
         if (heldItem == null) return;
         if (heldItem.getType().equals(Material.GRAY_DYE)) {
 
-            if (!isSkillReady(user, 30000)) {
-                player.sendMessage(Component.text("Ability is on cooldown! "));
+            if (!checkSkillReady(user)) {
                 return;
             }
 
@@ -48,7 +50,13 @@ public class BroodmotherMonster extends Monster {
         Player player = user.getPlayer();
         super.setup(user);
 
-        player.getInventory().addItem(new ItemStack(Material.GRAY_DYE, 1));
+        var item = new ItemStack(Material.GRAY_DYE, 1);
+        var meta = item.getItemMeta();
+        meta.displayName(Component.text("Spawn Silverfish", getColor()));
+        meta.lore(List.of(Component.text("Spawn silverfish to distract the guards!", NamedTextColor.WHITE)));
+        item.setItemMeta(meta);
+
+        player.getInventory().addItem(item);
         player.getInventory().addItem(new ItemStack(Material.COOKED_BEEF, 64));
         player.getInventory().addItem(new ItemStack(Material.INFESTED_STONE_BRICKS, 4));
 

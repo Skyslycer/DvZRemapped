@@ -2,7 +2,7 @@ name: DvZRemapped
 version: '1.0'
 main: me.lojosho.dvzremapped.DvZRemappedPlugin
 api-version: 1.19
-authors: [ LoJoSho ]
+authors: [ LoJoSho, Craftinators ]
 depend:
   - WorldGuard
   - LibsDisguises
@@ -13,4 +13,4 @@ commands:
     permission: "dvz.admin.start"
 permissions:
   dvz.admin.start:
-    default: OP
+    default: op

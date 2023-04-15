@@ -15,24 +15,23 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class SpiderMonster extends Monster {
 
     public SpiderMonster() {
-        super("spider", Material.MUSIC_DISC_MALL, NamedTextColor.LIGHT_PURPLE, ChatColor.LIGHT_PURPLE, .15f, EntityType.SPIDER, "Blind and confuse the dwarves with your skill!");
+        super("spider", Material.MUSIC_DISC_MALL, NamedTextColor.LIGHT_PURPLE, ChatColor.LIGHT_PURPLE, .15f, EntityType.SPIDER,
+                "Blind and confuse the dwarves with your skill!", 20000);
     }
 
     @Override
     public void transmute(@NotNull User user) {
         Player player = user.getPlayer();
         ItemStack heldItem = user.getPlayer().getInventory().getItemInMainHand();
-        if (heldItem == null) return;
         if (heldItem.getType().equals(Material.SPIDER_EYE)) {
-
-            if (!isSkillReady(user, 30000)) {
-                player.sendMessage(Component.text("Cooldown! "));
+            if (!checkSkillReady(user)) {
                 return;
             }
-
             Location location = player.getLocation();
 
             for (Player goingDieSoonPlayer : location.getNearbyPlayers(10)) {
@@ -51,7 +50,13 @@ public class SpiderMonster extends Monster {
         Player player = user.getPlayer();
         super.setup(user);
 
-        player.getInventory().addItem(new ItemStack(Material.SPIDER_EYE, 1));
+        var item = new ItemStack(Material.SPIDER_EYE, 1);
+        var meta = item.getItemMeta();
+        meta.displayName(Component.text("Blind & Confuse", getColor()));
+        meta.lore(List.of(Component.text("Blind and confuse nearby players!", NamedTextColor.WHITE)));
+        item.setItemMeta(meta);
+
+        player.getInventory().addItem(item);
         player.getInventory().addItem(new ItemStack(Material.COOKED_BEEF, 64));
         player.getInventory().addItem(new ItemStack(Material.VINE, 6));
 

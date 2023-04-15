@@ -14,7 +14,8 @@ import org.jetbrains.annotations.NotNull;
 public class CreeperMonster extends Monster {
 
     public CreeperMonster() {
-        super("creeper", Material.MUSIC_DISC_CHIRP, NamedTextColor.RED, ChatColor.RED, .15f, EntityType.CREEPER, "Blow up the fortress with your explosive skill!");
+        super("creeper", Material.MUSIC_DISC_CHIRP, NamedTextColor.RED, ChatColor.RED, .15f, EntityType.CREEPER,
+                "Blow up the fortress with your explosive skill!", -1);
     }
 
     @Override

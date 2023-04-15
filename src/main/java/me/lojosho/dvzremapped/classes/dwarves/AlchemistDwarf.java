@@ -32,7 +32,8 @@ public class AlchemistDwarf extends Dwarf {
     private static ItemStack potionOfFireResistance;
 
     public AlchemistDwarf() {
-        super("alchemist", Material.MUSIC_DISC_MELLOHI, NamedTextColor.DARK_PURPLE, ChatColor.DARK_PURPLE, .5f, "Transmutate mundane potions to get potions to save and powerup dwarves!");
+        super("alchemist", Material.MUSIC_DISC_MELLOHI, NamedTextColor.DARK_PURPLE, ChatColor.DARK_PURPLE,
+                .5f, "Transmutate mundane potions to get potions to save and powerup dwarves!", 2000);
 
         // Set up potions
 
@@ -73,8 +74,7 @@ public class AlchemistDwarf extends Dwarf {
     public void transmute(@NotNull User user) {
         Player player = user.getPlayer();
 
-        if (!isSkillReady(user, 2000)) {
-            MessagesUtil.sendMessage(player, "<#CE4B9C>Your transmutation is on cooldown! ");
+        if (!checkSkillReady(user)) {
             return;
         }
 
@@ -115,6 +115,7 @@ public class AlchemistDwarf extends Dwarf {
 
     @Override
     public void setup(@NotNull User user) {
+        super.setup(user);
         Player player = user.getPlayer();
 
         // Transmutable Item
@@ -143,10 +144,6 @@ public class AlchemistDwarf extends Dwarf {
         player.getInventory().addItem(book, item1, item2, item3, item4, item5, item6, item7, item8, item9);
 
         player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-
-        player.sendTitlePart(TitlePart.TIMES, Title.Times.times(Duration.ofMillis(1000), Duration.ofMillis(3000), Duration.ofMillis(1000)));
-        player.sendTitlePart(TitlePart.SUBTITLE, Component.text("Fortuna Favors the Bold!").color(TextColor.color(0, 255, 0)));
-        player.sendTitlePart(TitlePart.TITLE, Component.text(" "));
 
         MessagesUtil.sendMessage(player, "<br><#CE4B9C>You picked the Alchemist class! <br><br><#CE4B9C>Transmutation Skill <br><GRAY>Transmutes <WHITE>3x Mundane Potions <gray>to <br><WHITE>   Potions + Milk + Bones + Redstone + Sand <br>");
     }

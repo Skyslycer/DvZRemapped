@@ -25,15 +25,16 @@ public class BlacksmithDwarf extends Dwarf {
     List<ItemStack> items = List.of(new ItemStack(Material.DIAMOND_PICKAXE), new ItemStack(Material.FEATHER, 32), new ItemStack(Material.FLINT, 32), new ItemStack(Material.STRING, 3), new ItemStack(Material.SHIELD), new ItemStack(Material.BLAZE_ROD, 4));
 
     public BlacksmithDwarf() {
-        super("blacksmith", Material.MUSIC_DISC_STAL, NamedTextColor.GRAY, ChatColor.GRAY, .3f, "Transmutate clocks to get powerful swords to slay monsters!");
+        super("blacksmith", Material.MUSIC_DISC_STAL, NamedTextColor.GRAY, ChatColor.GRAY, .3f,
+                "Transmutate clocks to get powerful swords to slay monsters!", 2000);
     }
 
     @Override
     public void transmute(@NotNull User user) {
+        super.setup(user);
         Player player = user.getPlayer();
 
-        if (!isSkillReady(user, 2000)) {
-            MessagesUtil.sendMessage(player, "<#CE4B9C>Your transmutation is on cooldown! ");
+        if (!checkSkillReady(user)) {
             return;
         }
 
@@ -89,12 +90,6 @@ public class BlacksmithDwarf extends Dwarf {
 
         player.getInventory().addItem(book, ironPick, item1, item2, item3, item4, item5, item6, item7, item8);
 
-        player.playSound(player, Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-
-        player.sendTitlePart(TitlePart.TIMES, Title.Times.times(Duration.ofMillis(1000), Duration.ofMillis(3000), Duration.ofMillis(1000)));
-        player.sendTitlePart(TitlePart.SUBTITLE, Component.text("Fortuna Favors the Bold!").color(TextColor.color(0, 255, 0)));
-        player.sendTitlePart(TitlePart.TITLE, Component.text(" "));
-        // <gray>Transmutes <WHITE>2x Orange Dye <gray>to <WHITE>Diamond Armor + 10x Gold Ore + Food
         MessagesUtil.sendMessage(player, "<br><#CE4B9C>You picked the Blacksmith class! <br><br><#CE4B9C>Transmutation Skill <br><gray>Transmutes <WHITE>3x Clocks <gray>to <br><WHITE>  Diamond Sword + Blaze Rod + Coal <br><WHITE>  (%) Flint + String + Feathers<br>");
     }
 }
