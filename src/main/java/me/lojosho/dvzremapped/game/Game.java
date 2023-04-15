@@ -70,7 +70,10 @@ public class Game {
             player.showTitle(Title.title(Component.text("DvZ has started!").color(NamedTextColor.RED),
                     Component.text("Fortuna favors the bold!").color(NamedTextColor.WHITE),
                     Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(10), Duration.ofSeconds(2))));
+            player.playSound(Sound.sound(Key.key("entity.wither.spawn"), Sound.Source.MASTER, 1, 1));
         });
+
+        DvZRemappedPlugin.getDwarfSpawn().getWorld().setStorm(false);
 
         bossBar = BossBar.bossBar(Component.text("Shrine Health"), 1, BossBar.Color.PURPLE, BossBar.Overlay.PROGRESS);
 
@@ -144,7 +147,7 @@ public class Game {
     private static void runPlague(World world) {
         Bukkit.broadcast(Component.text("A plague has ripped through the fortress! Monsters appear on the horizon...").color(NamedTextColor.RED));
         Bukkit.getOnlinePlayers().forEach(player -> {
-            player.playSound(Sound.sound(Key.key("entity.wither.spawn"), Sound.Source.HOSTILE, 1, 1));
+            player.playSound(Sound.sound(Key.key("ambient.cave"), Sound.Source.MASTER, 1, 1));
             player.showTitle(Title.title(Component.text("The Plague").color(NamedTextColor.RED),
                     Component.text("Monster appear on the horizon...").color(NamedTextColor.WHITE),
                     Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(2), Duration.ofSeconds(1))));

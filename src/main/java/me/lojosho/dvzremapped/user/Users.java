@@ -47,16 +47,16 @@ public class Users {
     }
 
     public static @NotNull Collection<@Nullable User> valuesRandomized() {
-        List<User> randomList = users.values().stream().toList();
+        List<User> randomList = new ArrayList<>(users.values());
         Collections.shuffle(randomList);
         return randomList;
     }
 
     public static boolean contains(UUID uniqueId) {
-        return values().contains(uniqueId);
+        return values().stream().map(User::getUniqueId).toList().contains(uniqueId);
     }
 
     public static int getCounted(UserStatus status) {
-        return values().stream().filter(user -> user.getStatus() == status).toList().size();
+        return values().stream().filter(user -> user.getPlayer().isOnline()).filter(user -> user.getStatus() == status).toList().size();
     }
 }

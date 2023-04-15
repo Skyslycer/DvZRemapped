@@ -11,11 +11,13 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class CreeperMonster extends Monster {
 
     public CreeperMonster() {
         super("creeper", Material.MUSIC_DISC_CHIRP, NamedTextColor.RED, ChatColor.RED, .15f, EntityType.CREEPER,
-                "Blow up the fortress with your explosive skill!", -1);
+                List.of("Blow up the fortress", "with your explosive skill!"), -1);
     }
 
     @Override

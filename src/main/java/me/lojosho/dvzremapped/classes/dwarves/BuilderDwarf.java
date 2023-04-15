@@ -2,6 +2,7 @@ package me.lojosho.dvzremapped.classes.dwarves;
 
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.util.MessagesUtil;
+import me.lojosho.dvzremapped.util.PlayerUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -26,7 +27,7 @@ public class BuilderDwarf extends Dwarf {
 
     public BuilderDwarf() {
         super("builder", Material.MUSIC_DISC_CAT, NamedTextColor.GREEN, ChatColor.GREEN, 1,
-                "Transmutate air to get blocks to build the fortress!", 10000);
+                List.of("Transmutate air to get", "blocks to build the fortress!"), 10000);
     }
 
     @Override
@@ -38,16 +39,13 @@ public class BuilderDwarf extends Dwarf {
         }
         Random ran = new Random();
         player.giveExp(ran.nextInt(1, 5));
-        player.getInventory().addItem(new ItemStack(Material.GLOWSTONE_DUST, 3));
-
-        //int stacks = 0;
-        player.getInventory().addItem(new ItemStack(blocks.get(ran.nextInt(0, blocks.size() - 1)), 64));
+        PlayerUtil.give(player,new ItemStack(Material.GLOWSTONE_DUST, 3));
+        PlayerUtil.give(player, new ItemStack(blocks.get(ran.nextInt(0, blocks.size() - 1)), 64));
         if (ran.nextInt(1, 12) == 2) {
-            player.getInventory().addItem(new ItemStack(Material.STICK, 12));
+            PlayerUtil.give(player, new ItemStack(Material.STICK, 12));
         }
 
         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
-
         user.setLastSkillUse(System.currentTimeMillis());
     }
 

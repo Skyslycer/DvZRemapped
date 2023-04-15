@@ -13,11 +13,13 @@ import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public abstract class Monster extends PlayerClass {
     private final @NotNull EntityType type;
 
     public Monster(@NotNull String id, @NotNull Material selectionMaterial, @NotNull TextColor color, @NotNull ChatColor legacyColor,
-                   float chance, @NotNull EntityType type, @NotNull String description, long cooldown) {
+                   float chance, @NotNull EntityType type, List<String> description, long cooldown) {
         super(id, selectionMaterial, color, legacyColor, description, chance, UserStatus.MONSTER, cooldown);
         Monsters.add(this);
         this.type = type;

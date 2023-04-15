@@ -21,12 +21,12 @@ public abstract class PlayerClass {
     private final Material selectionMaterial;
     private final TextColor color;
     private final ChatColor legacyColor;
-    private final String description;
+    private final List<String> description;
     private final float chance;
     private final UserStatus type;
     private final long cooldown;
 
-    protected PlayerClass(@NotNull String id, @NotNull Material selectionMaterial, TextColor color, ChatColor legacyColor, String description, float chance, UserStatus type, long cooldown) {
+    protected PlayerClass(@NotNull String id, @NotNull Material selectionMaterial, TextColor color, ChatColor legacyColor, List<String> description, float chance, UserStatus type, long cooldown) {
         this.id = id;
         this.selectionMaterial = selectionMaterial;
         this.color = color;
@@ -53,7 +53,7 @@ public abstract class PlayerClass {
         return color;
     }
 
-    public final String getDescription() {
+    public final List<String> getDescription() {
         return description;
     }
 
@@ -108,7 +108,7 @@ public abstract class PlayerClass {
             var item = new ItemStack(type.getSelectionMaterial());
             var meta = item.getItemMeta();
             meta.displayName(Component.text(StringUtils.capitalizeFirstLetter(type.getId())).color(type.getColor()));
-            meta.lore(List.of(Component.text(type.getDescription()).color(NamedTextColor.WHITE)));
+            meta.lore(type.getDescription().stream().map(text -> Component.text(text).color(NamedTextColor.WHITE)).toList());
             item.setItemMeta(meta);
             items.add(item);
         }

@@ -4,22 +4,23 @@ import me.lojosho.dvzremapped.classes.PlayerClass;
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.user.UserStatus;
 import me.lojosho.dvzremapped.util.MessagesUtil;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.title.Title;
-import net.kyori.adventure.title.TitlePart;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.codehaus.plexus.util.StringUtils;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
+import java.util.List;
 
 public abstract class Dwarf extends PlayerClass {
     public Dwarf(@NotNull String id, @NotNull Material selectionMaterial, @NotNull TextColor color, @NotNull ChatColor legacyColor,
-                 float chance, @NotNull String description, long cooldown) {
+                 float chance, List<String> description, long cooldown) {
         super(id, selectionMaterial, color, legacyColor, description, chance, UserStatus.DWARF, cooldown);
         Dwarves.add(this);
     }
@@ -42,6 +43,6 @@ public abstract class Dwarf extends PlayerClass {
                 Title.Times.times(Duration.ofMillis(500), Duration.ofSeconds(3), Duration.ofSeconds(1))
         );
         user.getPlayer().showTitle(title);
-        user.getPlayer().playSound(user.getPlayer(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
+        user.getPlayer().playSound(Sound.sound(Key.key("entity.player.levelup"), Sound.Source.MASTER, 1, 1));
     }
 }

@@ -19,7 +19,7 @@ public class BroodmotherMonster extends Monster {
 
     public BroodmotherMonster() {
         super("Broodmother", Material.MUSIC_DISC_WARD, NamedTextColor.DARK_GREEN, ChatColor.DARK_GREEN, .05f, EntityType.SILVERFISH,
-                "Spawn silverfish and attack the fortress!", 20000);
+                List.of("Spawn silverfish and", "attack the fortress!"), 20000);
     }
 
     @Override

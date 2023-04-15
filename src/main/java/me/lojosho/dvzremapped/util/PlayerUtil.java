@@ -13,4 +13,9 @@ public class PlayerUtil {
         }
     }
 
+    public static void give(Player player, ItemStack item) {
+        var drops = player.getInventory().addItem(item);
+        drops.values().forEach(left -> player.getLocation().getWorld().dropItemNaturally(player.getLocation(), left));
+    }
+
 }

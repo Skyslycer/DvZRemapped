@@ -16,11 +16,13 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class SkeletonMonster extends Monster {
 
     public SkeletonMonster() {
         super("skeleton", Material.MUSIC_DISC_STRAD, NamedTextColor.WHITE, ChatColor.WHITE, .25f, EntityType.SKELETON,
-                "Shoot the guards with flaming arrows!", -1);
+                List.of("Shoot the guards", "with flaming arrows!"), -1);
     }
 
     @Override

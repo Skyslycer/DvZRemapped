@@ -2,6 +2,7 @@ package me.lojosho.dvzremapped.classes.dwarves;
 
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.util.MessagesUtil;
+import me.lojosho.dvzremapped.util.PlayerUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -33,7 +34,7 @@ public class AlchemistDwarf extends Dwarf {
 
     public AlchemistDwarf() {
         super("alchemist", Material.MUSIC_DISC_MELLOHI, NamedTextColor.DARK_PURPLE, ChatColor.DARK_PURPLE,
-                .5f, "Transmutate mundane potions to get potions to save and powerup dwarves!", 2000);
+                .5f, List.of("Transmutate mundane potions to get", "potions to save and powerup dwarves!"), 2000);
 
         // Set up potions
 
@@ -83,24 +84,23 @@ public class AlchemistDwarf extends Dwarf {
         Random random = new Random();
 
         if (player.getInventory().containsAtLeast(mundanePotion, 3)) {
-            player.getInventory().removeItem(mundanePotion);
-            player.getInventory().removeItem(mundanePotion);
-            player.getInventory().removeItem(mundanePotion);
-            player.getInventory().addItem(new ItemStack(Material.BONE, random.nextInt(3, 8)));
-            player.getInventory().addItem(new ItemStack(Material.MILK_BUCKET, random.nextInt(1, 2)));
-            player.getInventory().addItem(new ItemStack(Material.SAND, 9));
-            player.getInventory().addItem(new ItemStack(Material.REDSTONE, 8));
+            player.getInventory().removeItem(mundanePotion, mundanePotion, mundanePotion);
+            PlayerUtil.give(player, new ItemStack(Material.BONE, random.nextInt(3, 8)));
+            PlayerUtil.give(player, new ItemStack(Material.MILK_BUCKET, random.nextInt(1, 2)));
+            PlayerUtil.give(player, new ItemStack(Material.SAND, 9));
+            PlayerUtil.give(player, new ItemStack(Material.REDSTONE, 8));
             if (random.nextInt(1, 3) != 1) {
-                player.getInventory().addItem(potionOfHealing.clone());
-                player.getInventory().addItem(potionOfHealing.clone());
+                for (int i = 0; i < 2; i++) {
+                    PlayerUtil.give(player, potionOfHealing.clone());
+                }
             } else {
-                player.getInventory().addItem(potionOfSwiftness.clone());
+                PlayerUtil.give(player, potionOfSwiftness.clone());
             }
             // Either Strength or Fire Resistance
             if (random.nextInt(1, 3) == 1) {
-                player.getInventory().addItem(potionOfFireResistance.clone());
+                PlayerUtil.give(player, potionOfFireResistance.clone());
             } else {
-                player.getInventory().addItem(potionOfStrength.clone());
+                PlayerUtil.give(player, potionOfStrength.clone());
             }
 
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);

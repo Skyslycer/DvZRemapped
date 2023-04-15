@@ -2,6 +2,7 @@ package me.lojosho.dvzremapped.classes.dwarves;
 
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.util.MessagesUtil;
+import me.lojosho.dvzremapped.util.PlayerUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -26,7 +27,7 @@ public class BlacksmithDwarf extends Dwarf {
 
     public BlacksmithDwarf() {
         super("blacksmith", Material.MUSIC_DISC_STAL, NamedTextColor.GRAY, ChatColor.GRAY, .3f,
-                "Transmutate clocks to get powerful swords to slay monsters!", 2000);
+                List.of("Transmutate clocks to get", "powerful swords to slay monsters!"), 2000);
     }
 
     @Override
@@ -42,13 +43,13 @@ public class BlacksmithDwarf extends Dwarf {
         Random random = new Random();
 
         if (player.getInventory().containsAtLeast(clock, 3)) {
-            player.getInventory().removeItem(clock.asQuantity(3));
-            player.getInventory().addItem(new ItemStack(Material.COAL, 8));
-            player.getInventory().addItem(new ItemStack(Material.BLAZE_ROD, 2));
-            player.getInventory().addItem(new ItemStack(Material.DIAMOND_SWORD));
+            player.getInventory().removeItem(clock, clock, clock);
+            PlayerUtil.give(player, new ItemStack(Material.COAL, 8));
+            PlayerUtil.give(player, new ItemStack(Material.BLAZE_ROD, 2));
+            PlayerUtil.give(player, new ItemStack(Material.DIAMOND_SWORD));
             for (ItemStack item : items) {
                 int chance = random.nextInt(0, 3);
-                if (chance == 1) player.getInventory().addItem(item.clone());
+                if (chance == 1) PlayerUtil.give(player, item.clone());
             }
 
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);

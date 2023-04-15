@@ -21,7 +21,7 @@ public class SpiderMonster extends Monster {
 
     public SpiderMonster() {
         super("spider", Material.MUSIC_DISC_MALL, NamedTextColor.LIGHT_PURPLE, ChatColor.LIGHT_PURPLE, .15f, EntityType.SPIDER,
-                "Blind and confuse the dwarves with your skill!", 20000);
+                List.of("Blind and confuse the", "dwarves with your skill!"), 20000);
     }
 
     @Override

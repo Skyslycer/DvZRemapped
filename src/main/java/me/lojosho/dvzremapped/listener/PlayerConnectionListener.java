@@ -22,21 +22,32 @@ public class PlayerConnectionListener implements Listener {
     public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
         event.joinMessage(MiniMessage.miniMessage().deserialize("<GRAY>(<GREEN>+<GRAY>) " + event.getPlayer().getName()));
         Player player = event.getPlayer();
+        if (!Game.isGameStart()) {
+            Game.hideBossBar(player);
+        }
         // Player should now be able to carry over connections
         if (!Users.contains(event.getPlayer().getUniqueId())) {
+            System.out.println("a");
             User user = new User(event.getPlayer());
             Users.add(user);
             user.reset();
-        } else if (Users.get(event.getPlayer().getUniqueId()).getStatus() == UserStatus.LIMBO) {
-            Users.get(event.getPlayer().getUniqueId()).reset();
         } else {
-            return;
+            var user = Users.get(event.getPlayer().getUniqueId());
+            System.out.println(user.getStatus());
+            if (user.getStatus() == UserStatus.LIMBO) {
+                user.reset();
+            } else if (user.getLogoutLocation() != null) {
+                System.out.println("hmm");
+                user.getPlayer().teleport(user.getLogoutLocation());
+                return;
+            }
         }
 
         if (Game.getStatus() == GameStatus.RUNNING) {
             if (Game.isMonsterReleased()) {
                 PlayerUtil.giveAll(player, PlayerClass.getRandomClassesItems(Monsters.getRandomMonsterClasses()));
             } else {
+                System.out.println("what");
                 PlayerUtil.giveAll(player, PlayerClass.getRandomClassesItems(Dwarves.getRandomDwarfClasses()));
             }
         }
@@ -45,5 +56,9 @@ public class PlayerConnectionListener implements Listener {
     @EventHandler
     public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
         event.quitMessage(MiniMessage.miniMessage().deserialize("<GRAY>(<RED>-<GRAY>) " + event.getPlayer().getName()));
+        if (Users.contains(event.getPlayer().getUniqueId())) {
+            User user = Users.get(event.getPlayer().getUniqueId());
+            user.setLogoutLocation(event.getPlayer().getLocation());;
+        }
     }
 }

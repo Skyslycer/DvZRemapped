@@ -6,9 +6,11 @@ import me.lojosho.dvzremapped.classes.PlayerClass;
 import me.lojosho.dvzremapped.classes.dwarves.Dwarf;
 import me.lojosho.dvzremapped.classes.monsters.Monster;
 import me.lojosho.dvzremapped.game.Game;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.UUID;
 
@@ -16,6 +18,7 @@ public class User {
     private final Player player;
     private final UUID uuid;
     private UserStatus status;
+    private Location logoutLocation;
 
     private PlayerClass userClass;
     private long lastSkillUse = -1;
@@ -53,9 +56,9 @@ public class User {
         Player player = getPlayer();
         player.getInventory().clear();
         userClass = dwarf;
-        dwarf.setup(this);
         setStatus(UserStatus.DWARF);
         player.teleport(DvZRemappedPlugin.getDwarfSpawn());
+        dwarf.setup(this);
     }
 
     public void turnMonster(Monster monster) {
@@ -68,6 +71,7 @@ public class User {
     }
 
     public void reset() {
+        logoutLocation = null;
         userClass = null;
         setStatus(UserStatus.LIMBO);
         if (!getPlayer().isOnline()) return;
@@ -116,4 +120,14 @@ public class User {
 
     // Not safe for outside classes to call this method
     private void setStatus(@NotNull UserStatus status) { this.status = status; }
+
+    @Nullable
+    public Location getLogoutLocation() {
+        return logoutLocation;
+    }
+
+    public void setLogoutLocation(@Nullable Location logoutLocation) {
+        this.logoutLocation = logoutLocation;
+    }
+
 }

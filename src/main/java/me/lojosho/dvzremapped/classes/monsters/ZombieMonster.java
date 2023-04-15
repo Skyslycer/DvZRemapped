@@ -15,11 +15,13 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public class ZombieMonster extends Monster {
 
     public ZombieMonster() {
         super("zombie", Material.MUSIC_DISC_WAIT, NamedTextColor.AQUA, ChatColor.AQUA, 1, EntityType.ZOMBIE,
-                "Attack the fortress with all your might!", -1);
+                List.of("Attack the fortress", "with all your might!"), -1);
     }
 
     @Override

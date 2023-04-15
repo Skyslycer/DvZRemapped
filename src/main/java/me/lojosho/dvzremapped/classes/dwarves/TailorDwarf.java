@@ -2,6 +2,7 @@ package me.lojosho.dvzremapped.classes.dwarves;
 
 import me.lojosho.dvzremapped.user.User;
 import me.lojosho.dvzremapped.util.MessagesUtil;
+import me.lojosho.dvzremapped.util.PlayerUtil;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -26,7 +27,7 @@ public class TailorDwarf extends Dwarf {
 
     public TailorDwarf() {
         super("tailor", Material.MUSIC_DISC_OTHERSIDE, NamedTextColor.BLUE, ChatColor.BLUE, .5f,
-                "Transmutate mundane potions to get potions to save and powerup dwarves!", 2000);
+                List.of("Transmutate mundane potions to", "get potions to save and power up dwarves!"), 2000);
     }
 
     @Override
@@ -39,15 +40,12 @@ public class TailorDwarf extends Dwarf {
 
         ItemStack dye = new ItemStack(Material.ORANGE_DYE);
 
-        Random random = new Random();
-
         if (player.getInventory().containsAtLeast(dye, 2)) {
-            player.getInventory().removeItem(dye);
-            player.getInventory().removeItem(dye);
-            player.getInventory().addItem(new ItemStack(Material.GOLD_ORE, 10));
-            player.getInventory().addItem(new ItemStack(Material.CAKE));
+            player.getInventory().removeItem(dye, dye);
+            PlayerUtil.give(player, new ItemStack(Material.GOLD_ORE, 10));
+            PlayerUtil.give(player, new ItemStack(Material.CAKE));
             for (ItemStack item : items) {
-                player.getInventory().addItem(item.clone());
+                PlayerUtil.give(player, item.clone());
             }
 
             player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
